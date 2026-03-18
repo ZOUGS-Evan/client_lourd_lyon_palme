@@ -9,7 +9,7 @@ namespace LyonPalme.Models
     /// Description : Représente un matériel du club (monopalme, tuba, combinaison, lunette).
     ///               Encapsule les données et délègue les opérations CRUD au DBInterface.
     /// </summary>
-    public class Materiel
+    public  class Materiel
     {
         // ── Propriétés ───────────────────────────────────────────────
 
