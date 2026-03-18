@@ -1,0 +1,36 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+# Packages / tools
+packages/
+*.nupkg
+*.snupkg
+
+# Logs / cache
+*.log
+*.cache
+.vscode/
+
+# Test results
+TestResults/
+
+# Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# Temp
+*.tmp
+*.userprefs

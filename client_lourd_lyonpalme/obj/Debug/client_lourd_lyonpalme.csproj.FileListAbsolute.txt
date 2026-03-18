@@ -1,0 +1,10 @@
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.csproj.AssemblyReference.cache
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\bin\Debug\client_lourd_lyonpalme.exe.config
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\bin\Debug\client_lourd_lyonpalme.exe
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\bin\Debug\client_lourd_lyonpalme.pdb
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.Properties.Resources.resources
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.csproj.GenerateResource.cache
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.csproj.CoreCompileInputs.cache
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.exe
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.pdb
+C:\Users\enzobourgin\source\repos\client_lourd_lyonpalme\client_lourd_lyonpalme\client_lourd_lyonpalme\obj\Debug\client_lourd_lyonpalme.exe.config
