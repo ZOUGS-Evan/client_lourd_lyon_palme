@@ -54,7 +54,7 @@ namespace LyonPalme.DataAccess
             string connectionString;
             try
             {
-                connectionString = ConfigurationManager.ConnectionStrings["sqlserver_lyonpalme"].ConnectionString;
+                connectionString = ConfigurationManager.ConnectionStrings["sqlserver_LPMateriel"].ConnectionString;
 
                 if (string.IsNullOrEmpty(connectionString))
                 {
