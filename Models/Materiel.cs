@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using LyonPalme.DataAccess;
 
 namespace LyonPalme.Models
@@ -13,16 +13,16 @@ namespace LyonPalme.Models
     {
         // ── Propriétés ───────────────────────────────────────────────
 
-        public int Id { get; private set; }
-        public string Code { get; set; }
-        public string Marque { get; set; }
-        public string Etat { get; set; }
-        public string TypeMateriel { get; private set; }
+        public int    Id               { get; private set; }
+        public string Code             { get; set; }
+        public string Marque           { get; set; }
+        public string Etat             { get; set; }
+        public string TypeMateriel     { get; private set; }
         public string TailleOuPointure { get; set; }
-        public string Materiaux { get; set; }   // Monopalme uniquement
-        public string TenuSaison { get; set; }   // Combinaison uniquement
-        public string Disponibilite { get; private set; }
-        public int NbPretsEnCours { get; private set; }
+        public string Materiaux        { get; set; }   // Monopalme uniquement
+        public string TenuSaison       { get; set; }   // Combinaison uniquement
+        public string Disponibilite    { get; private set; }
+        public int    NbPretsEnCours   { get; private set; }
 
         // ── Référence DBInterface ────────────────────────────────────
 
@@ -38,17 +38,17 @@ namespace LyonPalme.Models
         /// <summary>Construit un Materiel depuis un DTO (issu de la BDD).</summary>
         public Materiel(MaterielDTO dto)
         {
-            _db = new DBInterface();
-            Id = dto.Id;
-            Code = dto.Code;
-            Marque = dto.Marque;
-            Etat = dto.Etat;
-            TypeMateriel = dto.TypeMateriel;
+            _db              = new DBInterface();
+            Id               = dto.Id;
+            Code             = dto.Code;
+            Marque           = dto.Marque;
+            Etat             = dto.Etat;
+            TypeMateriel     = dto.TypeMateriel;
             TailleOuPointure = dto.TailleOuPointure;
-            Materiaux = dto.Materiaux;
-            TenuSaison = dto.TenuSaison;
-            Disponibilite = dto.Disponibilite;
-            NbPretsEnCours = dto.NbPretsEnCours;
+            Materiaux        = dto.Materiaux;
+            TenuSaison       = dto.TenuSaison;
+            Disponibilite    = dto.Disponibilite;
+            NbPretsEnCours   = dto.NbPretsEnCours;
         }
 
         // ── Méthodes métier ──────────────────────────────────────────
@@ -140,15 +140,15 @@ namespace LyonPalme.Models
             if (dto == null)
                 throw new Exception("Matériel introuvable (id=" + Id + ").");
 
-            Code = dto.Code;
-            Marque = dto.Marque;
-            Etat = dto.Etat;
-            TypeMateriel = dto.TypeMateriel;
+            Code             = dto.Code;
+            Marque           = dto.Marque;
+            Etat             = dto.Etat;
+            TypeMateriel     = dto.TypeMateriel;
             TailleOuPointure = dto.TailleOuPointure;
-            Materiaux = dto.Materiaux;
-            TenuSaison = dto.TenuSaison;
-            Disponibilite = dto.Disponibilite;
-            NbPretsEnCours = dto.NbPretsEnCours;
+            Materiaux        = dto.Materiaux;
+            TenuSaison       = dto.TenuSaison;
+            Disponibilite    = dto.Disponibilite;
+            NbPretsEnCours   = dto.NbPretsEnCours;
         }
 
         /// <summary>Retourne une représentation lisible du matériel.</summary>

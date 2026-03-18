@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LyonPalme.DataAccess;
 
 namespace LyonPalme.Models
@@ -6,158 +7,191 @@ namespace LyonPalme.Models
     /// <summary>
     /// Auteur      : R. Fonseca
     /// Date        : 11/03/2026
-    /// Description : Représente un matériel du club (monopalme, tuba, combinaison, lunette).
-    ///               Encapsule les données et délègue les opérations CRUD au DBInterface.
+    /// Description : Point d'entrée central de la logique métier.
+    ///               Fait le lien entre les Forms et les autres Models.
+    ///               Gère l'authentification et expose les opérations
+    ///               principales de l'application (stock, prêts, retours).
     /// </summary>
-    public class Materiel
+    public class Gestion
     {
-        // ── Propriétés ───────────────────────────────────────────────
+        // ── Singleton ────────────────────────────────────────────────
 
-        public int    Id               { get; private set; }
-        public string Code             { get; set; }
-        public string Marque           { get; set; }
-        public string Etat             { get; set; }
-        public string TypeMateriel     { get; private set; }
-        public string TailleOuPointure { get; set; }
-        public string Materiaux        { get; set; }   // Monopalme uniquement
-        public string TenuSaison       { get; set; }   // Combinaison uniquement
-        public string Disponibilite    { get; private set; }
-        public int    NbPretsEnCours   { get; private set; }
+        private static Gestion _instance;
 
-        // ── Référence DBInterface ────────────────────────────────────
+        public static Gestion getInstance()
+        {
+            if (_instance == null)
+                _instance = new Gestion();
+            return _instance;
+        }
+
+        // ── État de session ──────────────────────────────────────────
+
+        /// <summary>Utilisateur actuellement connecté. Null si non connecté.</summary>
+        public UtilisateurDTO UtilisateurConnecte { get; private set; }
+
+        /// <summary>Indique si un responsable est actuellement connecté.</summary>
+        public bool EstConnecte
+        {
+            get { return UtilisateurConnecte != null; }
+        }
+
+        // ── Références ───────────────────────────────────────────────
 
         private readonly DBInterface _db;
+        public readonly Inventaire Inventaire;
+        public readonly Historique Historique;
 
-        // ── Constructeurs ────────────────────────────────────────────
+        // ── Constructeur privé (singleton) ───────────────────────────
 
-        public Materiel()
+        private Gestion()
         {
             _db = new DBInterface();
+            Inventaire = new Inventaire();
+            Historique = new Historique();
         }
 
-        /// <summary>Construit un Materiel depuis un DTO (issu de la BDD).</summary>
-        public Materiel(MaterielDTO dto)
-        {
-            _db              = new DBInterface();
-            Id               = dto.Id;
-            Code             = dto.Code;
-            Marque           = dto.Marque;
-            Etat             = dto.Etat;
-            TypeMateriel     = dto.TypeMateriel;
-            TailleOuPointure = dto.TailleOuPointure;
-            Materiaux        = dto.Materiaux;
-            TenuSaison       = dto.TenuSaison;
-            Disponibilite    = dto.Disponibilite;
-            NbPretsEnCours   = dto.NbPretsEnCours;
-        }
-
-        // ── Méthodes métier ──────────────────────────────────────────
+        // ── Authentification ─────────────────────────────────────────
 
         /// <summary>
-        /// Indique si le matériel est actuellement disponible au prêt.
+        /// Tente de connecter un responsable.
         /// </summary>
-        public bool EstDisponible()
+        /// <returns>True si les identifiants sont corrects.</returns>
+        public bool Connecter(string login, string motDePasse)
         {
-            return string.Equals(Disponibilite, "Disponible",
-                                 StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Indique si le matériel est hors service.
-        /// </summary>
-        public bool EstHorsService()
-        {
-            return string.Equals(Etat, "Hors service",
-                                 StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Ajoute ce matériel en base. Calcule l'ID automatiquement.
-        /// </summary>
-        /// <exception cref="Exception">Si le type est invalide ou le code déjà existant.</exception>
-        public void Ajouter()
-        {
-            int nextId = _db.GetNextId("Materiel");
-
-            int? pointure = null;
-            if (!string.IsNullOrEmpty(TailleOuPointure) &&
-                string.Equals(TypeMateriel, "Monopalme", StringComparison.OrdinalIgnoreCase))
+            UtilisateurDTO user = _db.Authentifier(login, motDePasse);
+            if (user != null)
             {
-                if (int.TryParse(TailleOuPointure, out int p))
-                    pointure = p;
+                UtilisateurConnecte = user;
+                return true;
             }
+            return false;
+        }
 
-            string taille = string.Equals(TypeMateriel, "Monopalme",
-                                           StringComparison.OrdinalIgnoreCase)
-                            ? null : TailleOuPointure;
+        /// <summary>Déconnecte l'utilisateur courant.</summary>
+        public void Deconnecter()
+        {
+            UtilisateurConnecte = null;
+        }
 
-            Id = _db.AjouterMateriel(nextId, Code, Marque, Etat, TypeMateriel,
-                                     pointure, Materiaux, taille, TenuSaison);
+        // ── Stock ────────────────────────────────────────────────────
+
+        /// <summary>Retourne tout le stock avec disponibilité.</summary>
+        public List<MaterielDTO> GetStock()
+        {
+            return _db.GetStock();
+        }
+
+        /// <summary>Recherche un matériel par code, type ou marque.</summary>
+        public List<MaterielDTO> RechercherMateriel(string recherche)
+        {
+            if (string.IsNullOrWhiteSpace(recherche))
+                return GetStock();
+            return _db.RechercherMateriel(recherche);
+        }
+
+        /// <summary>Retourne les détails d'un matériel.</summary>
+        public MaterielDTO GetDetailsMateriel(int idMateriel)
+        {
+            return _db.GetDetailsMateriel(idMateriel);
         }
 
         /// <summary>
-        /// Modifie ce matériel en base.
+        /// Ajoute un nouveau matériel via le Model Materiel.
         /// </summary>
-        public void Modifier()
+        public void AjouterMateriel(Materiel materiel)
         {
-            int? pointure = null;
-            string taille = null;
+            if (materiel == null)
+                throw new ArgumentNullException("materiel");
+            if (string.IsNullOrWhiteSpace(materiel.Code))
+                throw new ArgumentException("Le code du matériel est obligatoire.");
+            if (string.IsNullOrWhiteSpace(materiel.TypeMateriel))
+                throw new ArgumentException("Le type du matériel est obligatoire.");
 
-            if (string.Equals(TypeMateriel, "Monopalme", StringComparison.OrdinalIgnoreCase))
-            {
-                if (int.TryParse(TailleOuPointure, out int p))
-                    pointure = p;
-            }
-            else
-            {
-                taille = TailleOuPointure;
-            }
+            materiel.Ajouter();
+        }
 
-            _db.ModifierMateriel(Id, Code, Marque, Etat,
-                                 pointure, Materiaux, taille, TenuSaison);
+        /// <summary>Modifie un matériel existant.</summary>
+        public void ModifierMateriel(Materiel materiel)
+        {
+            if (materiel == null)
+                throw new ArgumentNullException("materiel");
+
+            materiel.Modifier();
+        }
+
+        /// <summary>Supprime un matériel disponible.</summary>
+        public void SupprimerMateriel(Materiel materiel)
+        {
+            if (materiel == null)
+                throw new ArgumentNullException("materiel");
+
+            materiel.Supprimer();
+        }
+
+        // ── Prêts ────────────────────────────────────────────────────
+
+        /// <summary>Retourne tous les prêts en cours.</summary>
+        public List<PretEnCoursDTO> GetPretsEnCours()
+        {
+            return _db.GetPretsEnCours();
         }
 
         /// <summary>
-        /// Supprime ce matériel de la base.
-        /// Lève une exception si le matériel est actuellement prêté.
+        /// Enregistre un nouveau prêt.
+        /// Lève une exception si le matériel est déjà prêté.
         /// </summary>
-        public void Supprimer()
+        public void EnregistrerPret(Pret pret)
         {
-            if (!EstDisponible())
-                throw new InvalidOperationException(
-                    "Impossible de supprimer le matériel " + Code +
-                    " : il est actuellement prêté.");
+            if (pret == null)
+                throw new ArgumentNullException("pret");
+            if (pret.IdMateriel <= 0)
+                throw new ArgumentException("Matériel non sélectionné.");
+            if (pret.IdAdherent <= 0)
+                throw new ArgumentException("Adhérent non sélectionné.");
+            if (pret.DateDebut == DateTime.MinValue)
+                throw new ArgumentException("Date de début invalide.");
 
-            _db.SupprimerMateriel(Id);
+            pret.Enregistrer();
         }
+
+        // ── Retours ──────────────────────────────────────────────────
 
         /// <summary>
-        /// Recharge les données de ce matériel depuis la base.
+        /// Enregistre le retour d'un matériel.
+        /// Clôture automatiquement le prêt (trigger SQL).
         /// </summary>
-        public void Rafraichir()
+        public void EnregistrerRetour(Retour retour)
         {
-            MaterielDTO dto = _db.GetDetailsMateriel(Id);
-            if (dto == null)
-                throw new Exception("Matériel introuvable (id=" + Id + ").");
+            if (retour == null)
+                throw new ArgumentNullException("retour");
+            if (retour.IdPret <= 0)
+                throw new ArgumentException("Prêt non sélectionné.");
+            if (string.IsNullOrEmpty(retour.Etat))
+                throw new ArgumentException("L'état du matériel est obligatoire.");
 
-            Code             = dto.Code;
-            Marque           = dto.Marque;
-            Etat             = dto.Etat;
-            TypeMateriel     = dto.TypeMateriel;
-            TailleOuPointure = dto.TailleOuPointure;
-            Materiaux        = dto.Materiaux;
-            TenuSaison       = dto.TenuSaison;
-            Disponibilite    = dto.Disponibilite;
-            NbPretsEnCours   = dto.NbPretsEnCours;
+            retour.Enregistrer();
         }
 
-        /// <summary>Retourne une représentation lisible du matériel.</summary>
-        public override string ToString()
+        // ── Adhérents ────────────────────────────────────────────────
+
+        /// <summary>Retourne la liste de tous les adhérents.</summary>
+        public List<AdherentDTO> GetAdherents()
         {
-            return string.Format("[{0}] {1} - {2} ({3}) — {4}",
-                Code, TypeMateriel, Marque,
-                TailleOuPointure ?? "—",
-                Disponibilite ?? Etat);
+            return _db.GetAdherents();
+        }
+
+        /// <summary>Ajoute un adhérent.</summary>
+        public void AjouterAdherent(Adherent adherent)
+        {
+            if (adherent == null)
+                throw new ArgumentNullException("adherent");
+            if (string.IsNullOrWhiteSpace(adherent.Nom))
+                throw new ArgumentException("Le nom est obligatoire.");
+            if (string.IsNullOrWhiteSpace(adherent.Prenom))
+                throw new ArgumentException("Le prénom est obligatoire.");
+
+            adherent.Ajouter();
         }
     }
 }
