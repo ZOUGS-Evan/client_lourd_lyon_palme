@@ -1,24 +1,85 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using LyonPalme.DataAccess;
 
 namespace LyonPalme.Models
 {
     /// <summary>
-    /// Repr�sente un enregistrement d'inventaire (snapshot) d'un mat�riel.
+    /// Auteur      : R. Fonseca
+    /// Date        : 11/03/2026
+    /// Description : Gère la consultation et l'analyse de l'inventaire du stock.
     /// </summary>
     public class Inventaire
     {
-        public int Id { get; set; }
+        private readonly DBInterface _db;
 
-        public int MaterielId { get; set; }
+        public Inventaire()
+        {
+            _db = new DBInterface();
+        }
 
-        public DateTime DateInventaire { get; set; }
+        // ── Méthodes ─────────────────────────────────────────────────
 
-        public int QuantiteTheorique { get; set; }
+        /// <summary>
+        /// Retourne l'inventaire complet groupé par type et taille/pointure.
+        /// </summary>
+        public List<InventaireDTO> GetInventaireComplet()
+        {
+            return _db.GetInventaire();
+        }
 
-        public int QuantitePhysique { get; set; }
+        /// <summary>
+        /// Retourne le nombre total de matériels disponibles (tous types).
+        /// </summary>
+        public int GetTotalDisponibles()
+        {
+            List<InventaireDTO> inventaire = _db.GetInventaire();
+            int total = 0;
+            foreach (InventaireDTO ligne in inventaire)
+                total += ligne.Disponibles;
+            return total;
+        }
 
-        public string Commentaire { get; set; }
+        /// <summary>
+        /// Retourne le nombre total de matériels actuellement prêtés.
+        /// </summary>
+        public int GetTotalPretes()
+        {
+            List<InventaireDTO> inventaire = _db.GetInventaire();
+            int total = 0;
+            foreach (InventaireDTO ligne in inventaire)
+                total += ligne.Pretes;
+            return total;
+        }
 
-        public int Ecart => QuantitePhysique - QuantiteTheorique;
+        /// <summary>
+        /// Retourne l'inventaire filtré pour un type de matériel donné.
+        /// Ex : "Monopalme", "Tuba_frontal", "Combinaison", "Lunette"
+        /// </summary>
+        public List<InventaireDTO> GetParType(string typeMateriel)
+        {
+            List<InventaireDTO> inventaire = _db.GetInventaire();
+            List<InventaireDTO> resultat = new List<InventaireDTO>();
+
+            foreach (InventaireDTO ligne in inventaire)
+            {
+                if (string.Equals(ligne.TypeMateriel, typeMateriel,
+                                  StringComparison.OrdinalIgnoreCase))
+                    resultat.Add(ligne);
+            }
+            return resultat;
+        }
+
+        /// <summary>
+        /// Retourne true si au moins un matériel du type donné est disponible.
+        /// </summary>
+        public bool ADisponibilite(string typeMateriel)
+        {
+            List<InventaireDTO> lignes = GetParType(typeMateriel);
+            foreach (InventaireDTO ligne in lignes)
+                if (ligne.Disponibles > 0) return true;
+            return false;
+        }
     }
 }

@@ -1,22 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace client_lourd_lyonpalme
+namespace LyonPalme
 {
-    internal static class Program
+    /// <summary>
+    /// Auteur      : R. Fonseca
+    /// Date        : 11/03/2026
+    /// Description : Point d'entrée de l'application LyonPalme.
+    ///               Initialise l'application Windows Forms et
+    ///               lance la fenêtre de connexion.
+    /// </summary>
+    static class Program
     {
-        /// <summary>
-        /// Point d'entrée principal de l'application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Forms.ConnexionForm());
         }
     }
 }
