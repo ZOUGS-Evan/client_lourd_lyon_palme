@@ -32,7 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,18 +46,14 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
   </ItemGroup>
-
   <ItemGroup>
     <!-- Programme principal -->
     <Compile Include="Program.cs" />
-
     <!-- Tools -->
     <Compile Include="Tools\Log.cs" />
-
     <!-- DataAccess -->
     <Compile Include="DataAccess\Connexion.cs" />
     <Compile Include="DataAccess\DBInterface.cs" />
-
     <!-- Models -->
     <Compile Include="Models\Adherent.cs" />
     <Compile Include="Models\Gestion.cs" />
@@ -67,7 +62,6 @@
     <Compile Include="Models\Materiel.cs" />
     <Compile Include="Models\Pret.cs" />
     <Compile Include="Models\Retour.cs" />
-
     <!-- Forms -->
     <Compile Include="Forms\AlertForm.cs">
       <SubType>Form</SubType>
@@ -75,63 +69,54 @@
     <Compile Include="Forms\AlertForm.Designer.cs">
       <DependentUpon>AlertForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\ConnexionForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ConnexionForm.Designer.cs">
       <DependentUpon>ConnexionForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\GestionForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\GestionForm.Designer.cs">
       <DependentUpon>GestionForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\InventaireForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\InventaireForm.Designer.cs">
       <DependentUpon>InventaireForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\MaterielAddForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MaterielAddForm.Designer.cs">
       <DependentUpon>MaterielAddForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\MaterielDetailsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MaterielDetailsForm.Designer.cs">
       <DependentUpon>MaterielDetailsForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\MaterielEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MaterielEditForm.Designer.cs">
       <DependentUpon>MaterielEditForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\PretForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\PretForm.Designer.cs">
       <DependentUpon>PretForm.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Forms\RetourForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\RetourForm.Designer.cs">
       <DependentUpon>RetourForm.cs</DependentUpon>
     </Compile>
-
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -153,10 +138,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

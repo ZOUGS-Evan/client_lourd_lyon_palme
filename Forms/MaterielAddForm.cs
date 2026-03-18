@@ -1,8 +1,6 @@
 using LyonPalme.Models;
 using System;
-using System.Data;
 using System.Windows.Forms;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace LyonPalme.Forms
 {
@@ -53,21 +51,23 @@ namespace LyonPalme.Forms
         {
             string type = cboType.SelectedItem != null ? cboType.SelectedItem.ToString() : "";
 
-            // Pointure (Monopalme uniquement)
-            lblPointure.Visible = type == "Monopalme";
-            txtPointure.Visible = type == "Monopalme";
+            bool isMono = type == "Monopalme";
+            bool isTubaOuComb = type == "Tuba_frontal" || type == "Combinaison";
+            bool isComb = type == "Combinaison";
 
-            // Matériaux (Monopalme uniquement)
-            lblMateriaux.Visible = type == "Monopalme";
-            txtMateriaux.Visible = type == "Monopalme";
+            // Pointure et Matériaux (Monopalme)
+            lblPointure.Visible = isMono;
+            txtPointure.Visible = isMono;
+            lblMateriaux.Visible = isMono;
+            txtMateriaux.Visible = isMono;
 
             // Taille (Tuba + Combinaison)
-            lblTaille.Visible = type == "Tuba_frontal" || type == "Combinaison";
-            txtTaille.Visible = type == "Tuba_frontal" || type == "Combinaison";
+            lblTaille.Visible = isTubaOuComb;
+            txtTaille.Visible = isTubaOuComb;
 
-            // Saison (Combinaison uniquement)
-            lblTenuSaison.Visible = type == "Combinaison";
-            cboTenuSaison.Visible = type == "Combinaison";
+            // Saison (Combinaison)
+            lblTenuSaison.Visible = isComb;
+            cboTenuSaison.Visible = isComb;
         }
 
         private void btnValider_Click(object sender, EventArgs e)
@@ -76,43 +76,33 @@ namespace LyonPalme.Forms
 
             try
             {
+                var db = new DataAccess.DBInterface();
                 string type = cboType.SelectedItem.ToString();
 
-                Materiel m = new Materiel();
-                m.Code = txtCode.Text.Trim().ToUpper();
-                m.Marque = txtMarque.Text.Trim();
-                m.Etat = cboEtat.SelectedItem.ToString();
+                int nextId = db.GetNextId("Materiel");
 
-                // Accès au champ privé TypeMateriel via réflexion n'est pas possible
-                // On passe directement par AjouterMateriel
-                int? pointure = null;
-                if (type == "Monopalme" && !string.IsNullOrEmpty(txtPointure.Text))
-                    int.TryParse(txtPointure.Text.Trim(), out int p);
-
-                int nextId = _gestion.GetStock().Count > 0
-                    ? new DataAccess.DBInterface().GetNextId("Materiel")
-                    : 1;
-
-                // Utiliser directement DBInterface pour passer le type
-                var db = new DataAccess.DBInterface();
-                nextId = db.GetNextId("Materiel");
-
+                // Préparation des variables nullables
                 string taille = (type == "Tuba_frontal" || type == "Combinaison")
                                   ? txtTaille.Text.Trim() : null;
-                string materiaux = type == "Monopalme"
+
+                string materiaux = (type == "Monopalme")
                                   ? txtMateriaux.Text.Trim() : null;
-                string saison = type == "Combinaison"
+
+                string saison = (type == "Combinaison")
                                   ? cboTenuSaison.SelectedItem.ToString() : null;
 
-                int? pt = null;
-                if (type == "Monopalme" && int.TryParse(txtPointure.Text.Trim(), out int pVal))
-                    pt = pVal;
+                int? pointure = null;
+                if (type == "Monopalme" && int.TryParse(txtPointure.Text.Trim(), out int p))
+                {
+                    pointure = p;
+                }
 
+                // Ajout en base
                 db.AjouterMateriel(nextId,
                     txtCode.Text.Trim().ToUpper(),
                     txtMarque.Text.Trim(),
                     cboEtat.SelectedItem.ToString(),
-                    type, pt, materiaux, taille, saison);
+                    type, pointure, materiaux, taille, saison);
 
                 AfficherSucces("Matériel " + txtCode.Text.Trim().ToUpper() + " ajouté avec succès.");
                 ResetFormulaire();
@@ -142,26 +132,34 @@ namespace LyonPalme.Forms
                 txtMarque.Focus();
                 return false;
             }
+
             string type = cboType.SelectedItem != null ? cboType.SelectedItem.ToString() : "";
-            if (type == "Monopalme" && string.IsNullOrWhiteSpace(txtMateriaux.Text))
+            
+            if (type == "Monopalme")
             {
-                AfficherErreur("Les matériaux sont obligatoires pour une Monopalme.");
-                txtMateriaux.Focus();
-                return false;
+                if (string.IsNullOrWhiteSpace(txtMateriaux.Text))
+                {
+                    AfficherErreur("Les matériaux sont obligatoires pour une Monopalme.");
+                    txtMateriaux.Focus();
+                    return false;
+                }
+                if (string.IsNullOrWhiteSpace(txtPointure.Text))
+                {
+                    AfficherErreur("La pointure est obligatoire pour une Monopalme.");
+                    txtPointure.Focus();
+                    return false;
+                }
             }
-            if (type == "Monopalme" && string.IsNullOrWhiteSpace(txtPointure.Text))
+            else if (type == "Tuba_frontal" || type == "Combinaison")
             {
-                AfficherErreur("La pointure est obligatoire pour une Monopalme.");
-                txtPointure.Focus();
-                return false;
+                if (string.IsNullOrWhiteSpace(txtTaille.Text))
+                {
+                    AfficherErreur("La taille est obligatoire pour ce type.");
+                    txtTaille.Focus();
+                    return false;
+                }
             }
-            if ((type == "Tuba_frontal" || type == "Combinaison")
-                && string.IsNullOrWhiteSpace(txtTaille.Text))
-            {
-                AfficherErreur("La taille est obligatoire pour ce type.");
-                txtTaille.Focus();
-                return false;
-            }
+
             lblMessage.Text = string.Empty;
             return true;
         }

@@ -4,6 +4,11 @@
     {
         private System.ComponentModel.IContainer components = null;
 
+        // Nouveaux conteneurs layout
+        private System.Windows.Forms.TableLayoutPanel tlpTop;
+        private System.Windows.Forms.TableLayoutPanel tlpKpi;
+        private System.Windows.Forms.FlowLayoutPanel flpActions;
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -16,11 +21,13 @@
         private void InitializeComponent()
         {
             this.pnlTop = new System.Windows.Forms.Panel();
+            this.tlpTop = new System.Windows.Forms.TableLayoutPanel();
             this.lblTitre = new System.Windows.Forms.Label();
             this.lblBienvenue = new System.Windows.Forms.Label();
             this.btnDeconnecter = new System.Windows.Forms.Button();
 
             this.pnlKpi = new System.Windows.Forms.Panel();
+            this.tlpKpi = new System.Windows.Forms.TableLayoutPanel();
             this.pnlKpiTotal = new System.Windows.Forms.Panel();
             this.lblKpiTotalLib = new System.Windows.Forms.Label();
             this.lblKpiTotal = new System.Windows.Forms.Label();
@@ -35,7 +42,7 @@
             this.lblKpiRetards = new System.Windows.Forms.Label();
 
             this.pnlGauche = new System.Windows.Forms.Panel();
-            this.pnlActions = new System.Windows.Forms.Panel();
+            this.flpActions = new System.Windows.Forms.FlowLayoutPanel();
             this.btnAjouterMateriel = new System.Windows.Forms.Button();
             this.btnNouveauPret = new System.Windows.Forms.Button();
             this.btnNouveauRetour = new System.Windows.Forms.Button();
@@ -51,9 +58,15 @@
             this.lblStockCount = new System.Windows.Forms.Label();
             this.dgvStock = new System.Windows.Forms.DataGridView();
             this.tabPrets = new System.Windows.Forms.TabPage();
+            this.pnlRecherchePrets = new System.Windows.Forms.Panel();
+            this.txtRecherchePrets = new System.Windows.Forms.TextBox();
+            this.lblRecherchePrets = new System.Windows.Forms.Label();
             this.lblPretsCount = new System.Windows.Forms.Label();
             this.dgvPrets = new System.Windows.Forms.DataGridView();
             this.tabRetards = new System.Windows.Forms.TabPage();
+            this.pnlRechercheRetards = new System.Windows.Forms.Panel();
+            this.txtRechercheRetards = new System.Windows.Forms.TextBox();
+            this.lblRechercheRetards = new System.Windows.Forms.Label();
             this.lblRetardsCount = new System.Windows.Forms.Label();
             this.dgvRetards = new System.Windows.Forms.DataGridView();
 
@@ -83,8 +96,11 @@
             this.colRetType = new System.Windows.Forms.DataGridViewTextBoxColumn();
 
             this.pnlTop.SuspendLayout();
+            this.tlpTop.SuspendLayout();
             this.pnlKpi.SuspendLayout();
+            this.tlpKpi.SuspendLayout();
             this.pnlGauche.SuspendLayout();
+            this.flpActions.SuspendLayout();
             this.pnlContenu.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabStock.SuspendLayout();
@@ -99,76 +115,104 @@
             this.pnlTop.BackColor = System.Drawing.Color.FromArgb(15, 32, 65);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Height = 65;
-            this.pnlTop.Controls.AddRange(new System.Windows.Forms.Control[]
-                { this.lblTitre, this.lblBienvenue, this.btnDeconnecter });
+            this.pnlTop.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.pnlTop.Controls.Add(this.tlpTop);
 
-            this.lblTitre.Text = "🤿  LyonPalme — Gestion du matériel";
+            // ── tlpTop (structure Header) ─────────────────────────────
+            this.tlpTop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpTop.ColumnCount = 3;
+            this.tlpTop.RowCount = 1;
+            this.tlpTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tlpTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.tlpTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpTop.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpTop.Controls.Add(this.lblTitre, 0, 0);
+            this.tlpTop.Controls.Add(this.lblBienvenue, 1, 0);
+            this.tlpTop.Controls.Add(this.btnDeconnecter, 2, 0);
+
+            this.lblTitre.Text = "LyonPalme — Gestion du matériel";
             this.lblTitre.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.lblTitre.ForeColor = System.Drawing.Color.White;
-            this.lblTitre.AutoSize = true;
-            this.lblTitre.Location = new System.Drawing.Point(15, 18);
+            this.lblTitre.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTitre.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
             this.lblBienvenue.Text = string.Empty;
-            this.lblBienvenue.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-            this.lblBienvenue.ForeColor = System.Drawing.Color.FromArgb(180, 200, 230);
-            this.lblBienvenue.AutoSize = true;
-            this.lblBienvenue.Location = new System.Drawing.Point(400, 22);
+            this.lblBienvenue.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblBienvenue.ForeColor = System.Drawing.Color.White;
+            this.lblBienvenue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblBienvenue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 
-            this.btnDeconnecter.Text = "⏻  Déconnecter";
-            this.btnDeconnecter.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnDeconnecter.Size = new System.Drawing.Size(130, 32);
-            this.btnDeconnecter.Location = new System.Drawing.Point(1060, 16);
-            this.btnDeconnecter.BackColor = System.Drawing.Color.FromArgb(180, 40, 40);
+            this.btnDeconnecter.Text = "Déconnecter";
+            this.btnDeconnecter.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.btnDeconnecter.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnDeconnecter.Size = new System.Drawing.Size(145, 42);
+            this.btnDeconnecter.Margin = new System.Windows.Forms.Padding(0, 11, 0, 11);
+            this.btnDeconnecter.BackColor = System.Drawing.Color.FromArgb(180, 30, 30);
             this.btnDeconnecter.ForeColor = System.Drawing.Color.White;
             this.btnDeconnecter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeconnecter.FlatAppearance.BorderSize = 0;
             this.btnDeconnecter.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDeconnecter.Click += new System.EventHandler(this.btnDeconnecter_Click);
 
-            // ── pnlKpi (bande de KPIs sous le header) ───────────────
+            // ── pnlKpi ───────────────────────────────────────────────
             this.pnlKpi.BackColor = System.Drawing.Color.FromArgb(240, 243, 250);
             this.pnlKpi.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlKpi.Height = 90;
             this.pnlKpi.Padding = new System.Windows.Forms.Padding(10, 8, 10, 8);
-            this.pnlKpi.Controls.AddRange(new System.Windows.Forms.Control[]
-            {
-                this.pnlKpiTotal, this.pnlKpiDispo,
-                this.pnlKpiPrete, this.pnlKpiRetards
-            });
+            this.pnlKpi.Controls.Add(this.tlpKpi);
 
-            ConstruireKpi(this.pnlKpiTotal, this.lblKpiTotalLib, this.lblKpiTotal, "Total matériels", System.Drawing.Color.FromArgb(15, 32, 65), 15, 8);
-            ConstruireKpi(this.pnlKpiDispo, this.lblKpiDispoLib, this.lblKpiDispo, "Disponibles", System.Drawing.Color.FromArgb(34, 139, 34), 295, 8);
-            ConstruireKpi(this.pnlKpiPrete, this.lblKpiPreteLib, this.lblKpiPrete, "Prêtés", System.Drawing.Color.FromArgb(200, 100, 0), 575, 8);
-            ConstruireKpi(this.pnlKpiRetards, this.lblKpiRetardsLib, this.lblKpiRetards, "Retards", System.Drawing.Color.FromArgb(180, 30, 30), 855, 8);
+            // ── tlpKpi (KPI responsive) ───────────────────────────────
+            this.tlpKpi.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpKpi.ColumnCount = 4;
+            this.tlpKpi.RowCount = 1;
+            this.tlpKpi.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpKpi.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpKpi.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpKpi.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpKpi.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpKpi.Padding = new System.Windows.Forms.Padding(0);
+            this.tlpKpi.Margin = new System.Windows.Forms.Padding(0);
 
-            // ── pnlGauche (barre de navigation) ─────────────────────
+            this.tlpKpi.Controls.Add(this.pnlKpiTotal, 0, 0);
+            this.tlpKpi.Controls.Add(this.pnlKpiDispo, 1, 0);
+            this.tlpKpi.Controls.Add(this.pnlKpiPrete, 2, 0);
+            this.tlpKpi.Controls.Add(this.pnlKpiRetards, 3, 0);
+
+            ConstruireKpi(this.pnlKpiTotal, this.lblKpiTotalLib, this.lblKpiTotal, "Total matériels", System.Drawing.Color.FromArgb(15, 32, 65));
+            ConstruireKpi(this.pnlKpiDispo, this.lblKpiDispoLib, this.lblKpiDispo, "Disponibles", System.Drawing.Color.FromArgb(34, 139, 34));
+            ConstruireKpi(this.pnlKpiPrete, this.lblKpiPreteLib, this.lblKpiPrete, "Prêtés", System.Drawing.Color.FromArgb(200, 100, 0));
+            ConstruireKpi(this.pnlKpiRetards, this.lblKpiRetardsLib, this.lblKpiRetards, "Retards", System.Drawing.Color.FromArgb(180, 30, 30));
+
+            // ── pnlGauche ─────────────────────────────────────────────
             this.pnlGauche.BackColor = System.Drawing.Color.FromArgb(248, 249, 252);
             this.pnlGauche.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlGauche.Width = 200;
             this.pnlGauche.Padding = new System.Windows.Forms.Padding(10, 15, 10, 10);
-            this.pnlGauche.Controls.Add(this.pnlActions);
+            this.pnlGauche.Controls.Add(this.flpActions);
 
-            this.pnlActions.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlActions.AutoSize = true;
-            this.pnlActions.Controls.AddRange(new System.Windows.Forms.Control[]
-            {
-                this.btnAjouterMateriel,
-                this.btnNouveauPret,
-                this.btnNouveauRetour,
-                this.btnInventaire,
-                this.btnActualiser
-            });
+            // ── flpActions (nav propre) ───────────────────────────────
+            this.flpActions.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flpActions.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flpActions.WrapContents = false;
+            this.flpActions.AutoSize = true;
+            this.flpActions.Margin = new System.Windows.Forms.Padding(0);
+            this.flpActions.Padding = new System.Windows.Forms.Padding(0);
+            this.flpActions.Controls.Add(this.btnAjouterMateriel);
+            this.flpActions.Controls.Add(this.btnNouveauPret);
+            this.flpActions.Controls.Add(this.btnNouveauRetour);
+            this.flpActions.Controls.Add(this.btnInventaire);
+            this.flpActions.Controls.Add(this.btnActualiser);
 
-            ConstruireBoutonNav(this.btnAjouterMateriel, "➕  Ajouter matériel", 0, this.btnAjouterMateriel_Click);
-            ConstruireBoutonNav(this.btnNouveauPret, "📤  Nouveau prêt", 50, this.btnNouveauPret_Click);
-            ConstruireBoutonNav(this.btnNouveauRetour, "📥  Enregistrer retour", 100, this.btnNouveauRetour_Click);
-            ConstruireBoutonNav(this.btnInventaire, "📋  Inventaire", 150, this.btnInventaire_Click);
-            ConstruireBoutonNav(this.btnActualiser, "🔄  Actualiser", 220, this.btnActualiser_Click);
-            this.btnActualiser.BackColor = System.Drawing.Color.FromArgb(220, 230, 245);
+            ConstruireBoutonNav(this.btnAjouterMateriel, "Ajouter matériel", this.btnAjouterMateriel_Click);
+            ConstruireBoutonNav(this.btnNouveauPret, "Nouveau prêt", this.btnNouveauPret_Click);
+            ConstruireBoutonNav(this.btnNouveauRetour, "Enregistrer retour", this.btnNouveauRetour_Click);
+            ConstruireBoutonNav(this.btnInventaire, "Inventaire", this.btnInventaire_Click);
+            ConstruireBoutonNavSecondaire(this.btnActualiser, "Actualiser", this.btnActualiser_Click);
 
             // ── pnlContenu ───────────────────────────────────────────
             this.pnlContenu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlContenu.Padding = new System.Windows.Forms.Padding(10);
+            this.pnlContenu.BackColor = System.Drawing.Color.FromArgb(240, 243, 250);
             this.pnlContenu.Controls.Add(this.tabControl);
 
             // ── tabControl ───────────────────────────────────────────
@@ -176,39 +220,42 @@
             this.tabControl.Font = new System.Drawing.Font("Segoe UI", 9.5F);
             this.tabControl.Controls.AddRange(new System.Windows.Forms.TabPage[]
                 { this.tabStock, this.tabPrets, this.tabRetards });
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
 
             // ── Tab Stock ────────────────────────────────────────────
-            this.tabStock.Text = "📦  Stock complet";
-            this.tabStock.Padding = new System.Windows.Forms.Padding(5);
+            this.tabStock.Text = "Stock complet";
+            this.tabStock.Padding = new System.Windows.Forms.Padding(8);
+            this.tabStock.BackColor = System.Drawing.Color.White;
             this.tabStock.Controls.AddRange(new System.Windows.Forms.Control[]
                 { this.dgvStock, this.pnlRechercheBar });
 
             this.pnlRechercheBar.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlRechercheBar.Height = 45;
+            this.pnlRechercheBar.Height = 56;
             this.pnlRechercheBar.BackColor = System.Drawing.Color.White;
-            this.pnlRechercheBar.Padding = new System.Windows.Forms.Padding(5, 8, 5, 5);
+            this.pnlRechercheBar.Padding = new System.Windows.Forms.Padding(10, 12, 10, 10);
             this.pnlRechercheBar.Controls.AddRange(new System.Windows.Forms.Control[]
                 { this.lblRecherche, this.txtRecherche, this.lblStockCount });
 
-            this.lblRecherche.Text = "🔍";
-            this.lblRecherche.Font = new System.Drawing.Font("Segoe UI", 11F);
+            this.lblRecherche.Text = "Recherche";
+            this.lblRecherche.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblRecherche.ForeColor = System.Drawing.Color.FromArgb(50, 60, 80);
             this.lblRecherche.AutoSize = true;
-            this.lblRecherche.Location = new System.Drawing.Point(5, 10);
+            this.lblRecherche.Location = new System.Drawing.Point(10, 18);
 
             this.txtRecherche.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtRecherche.Size = new System.Drawing.Size(300, 28);
-            this.txtRecherche.Location = new System.Drawing.Point(30, 8);
+            this.txtRecherche.Location = new System.Drawing.Point(95, 14);
+            this.txtRecherche.Size = new System.Drawing.Size(380, 28);
             this.txtRecherche.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtRecherche.ForeColor = System.Drawing.Color.Gray;
-            this.txtRecherche.Text = "Rechercher par code, type, marque...";
-            this.txtRecherche.GotFocus += (s, e) => { if (this.txtRecherche.ForeColor == System.Drawing.Color.Gray) { this.txtRecherche.Text = ""; this.txtRecherche.ForeColor = System.Drawing.Color.Black; } };
-            this.txtRecherche.LostFocus += (s, e) => { if (string.IsNullOrWhiteSpace(this.txtRecherche.Text)) { this.txtRecherche.Text = "Rechercher par code, type, marque..."; this.txtRecherche.ForeColor = System.Drawing.Color.Gray; } };
+            this.txtRecherche.ForeColor = System.Drawing.Color.Black;              // CHANGÉ
+            this.txtRecherche.Text = string.Empty;                                 // CHANGÉ
+            this.txtRecherche.GotFocus -= (s, e) => { if (this.txtRecherche.ForeColor == System.Drawing.Color.Gray) { this.txtRecherche.Text = ""; this.txtRecherche.ForeColor = System.Drawing.Color.Black; } }; // CHANGÉ
+            this.txtRecherche.LostFocus -= (s, e) => { if (string.IsNullOrWhiteSpace(this.txtRecherche.Text)) { this.txtRecherche.Text = "Rechercher par code, type, marque..."; this.txtRecherche.ForeColor = System.Drawing.Color.Gray; } }; // CHANGÉ
             this.txtRecherche.TextChanged += new System.EventHandler(this.txtRecherche_TextChanged);
 
             this.lblStockCount.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblStockCount.ForeColor = System.Drawing.Color.Gray;
             this.lblStockCount.AutoSize = true;
-            this.lblStockCount.Location = new System.Drawing.Point(345, 12);
+            this.lblStockCount.Location = new System.Drawing.Point(490, 18);
 
             // dgvStock
             ConfigurerDataGridView(this.dgvStock);
@@ -220,25 +267,48 @@
             });
             this.dgvStock.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvStock_CellDoubleClick);
 
-            this.colId.Name = "colId"; this.colId.HeaderText = "ID"; this.colId.Width = 40; this.colId.Visible = false;
-            this.colCode.Name = "colCode"; this.colCode.HeaderText = "Code"; this.colCode.Width = 110;
-            this.colType.Name = "colType"; this.colType.HeaderText = "Type"; this.colType.Width = 130;
-            this.colMarque.Name = "colMarque"; this.colMarque.HeaderText = "Marque"; this.colMarque.Width = 110;
-            this.colTaille.Name = "colTaille"; this.colTaille.HeaderText = "Taille/Point."; this.colTaille.Width = 100;
-            this.colEtat.Name = "colEtat"; this.colEtat.HeaderText = "État"; this.colEtat.Width = 110;
-            this.colDispo.Name = "colDispo"; this.colDispo.HeaderText = "Disponibilité"; this.colDispo.Width = 110;
+            this.colId.Name = "colId"; this.colId.HeaderText = "ID"; this.colId.Visible = false;
+            this.colCode.Name = "colCode"; this.colCode.HeaderText = "Code";
+            this.colType.Name = "colType"; this.colType.HeaderText = "Type";
+            this.colMarque.Name = "colMarque"; this.colMarque.HeaderText = "Marque";
+            this.colTaille.Name = "colTaille"; this.colTaille.HeaderText = "Taille/Point.";
+            this.colEtat.Name = "colEtat"; this.colEtat.HeaderText = "État";
+            this.colDispo.Name = "colDispo"; this.colDispo.HeaderText = "Disponibilité";
 
             // ── Tab Prêts ─────────────────────────────────────────────
-            this.tabPrets.Text = "📤  Prêts en cours";
-            this.tabPrets.Padding = new System.Windows.Forms.Padding(5);
+            this.tabPrets.Text = "Prêts en cours";
+            this.tabPrets.Padding = new System.Windows.Forms.Padding(8);
+            this.tabPrets.BackColor = System.Drawing.Color.White;
             this.tabPrets.Controls.AddRange(new System.Windows.Forms.Control[]
-                { this.dgvPrets, this.lblPretsCount });
+                { this.dgvPrets, this.pnlRecherchePrets });
 
-            this.lblPretsCount.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblPretsCount.Height = 30;
+            this.pnlRecherchePrets.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlRecherchePrets.Height = 56;
+            this.pnlRecherchePrets.BackColor = System.Drawing.Color.White;
+            this.pnlRecherchePrets.Padding = new System.Windows.Forms.Padding(10, 12, 10, 10);
+            this.pnlRecherchePrets.Controls.AddRange(new System.Windows.Forms.Control[]
+                { this.lblRecherchePrets, this.txtRecherchePrets, this.lblPretsCount });
+
+            this.lblRecherchePrets.Text = "Recherche";
+            this.lblRecherchePrets.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblRecherchePrets.ForeColor = System.Drawing.Color.FromArgb(50, 60, 80);
+            this.lblRecherchePrets.AutoSize = true;
+            this.lblRecherchePrets.Location = new System.Drawing.Point(10, 18);
+
+            this.txtRecherchePrets.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtRecherchePrets.Location = new System.Drawing.Point(95, 14);
+            this.txtRecherchePrets.Size = new System.Drawing.Size(380, 28);
+            this.txtRecherchePrets.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtRecherchePrets.ForeColor = System.Drawing.Color.Black;         // CHANGÉ
+            this.txtRecherchePrets.Text = string.Empty;                            // CHANGÉ
+            this.txtRecherchePrets.GotFocus -= (s, e) => { if (this.txtRecherchePrets.ForeColor == System.Drawing.Color.Gray) { this.txtRecherchePrets.Text = ""; this.txtRecherchePrets.ForeColor = System.Drawing.Color.Black; } }; // CHANGÉ
+            this.txtRecherchePrets.LostFocus -= (s, e) => { if (string.IsNullOrWhiteSpace(this.txtRecherchePrets.Text)) { this.txtRecherchePrets.Text = "Rechercher par adhérent, code, marque..."; this.txtRecherchePrets.ForeColor = System.Drawing.Color.Gray; } }; // CHANGÉ
+            this.txtRecherchePrets.TextChanged += new System.EventHandler(this.txtRecherchePrets_TextChanged);
+
             this.lblPretsCount.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblPretsCount.ForeColor = System.Drawing.Color.Gray;
-            this.lblPretsCount.Padding = new System.Windows.Forms.Padding(5, 8, 0, 0);
+            this.lblPretsCount.AutoSize = true;
+            this.lblPretsCount.Location = new System.Drawing.Point(490, 18);
 
             ConfigurerDataGridView(this.dgvPrets);
             this.dgvPrets.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -248,23 +318,47 @@
                 this.colPretMarque, this.colPretDate, this.colPretJours
             });
 
-            this.colPretId.Name = "colPretId"; this.colPretId.HeaderText = "ID"; this.colPretId.Width = 40; this.colPretId.Visible = false;
-            this.colPretAdherent.Name = "colPretAdherent"; this.colPretAdherent.HeaderText = "Adhérent"; this.colPretAdherent.Width = 200;
-            this.colPretCode.Name = "colPretCode"; this.colPretCode.HeaderText = "Code"; this.colPretCode.Width = 110;
-            this.colPretMarque.Name = "colPretMarque"; this.colPretMarque.HeaderText = "Marque"; this.colPretMarque.Width = 110;
-            this.colPretDate.Name = "colPretDate"; this.colPretDate.HeaderText = "Début"; this.colPretDate.Width = 110;
-            this.colPretJours.Name = "colPretJours"; this.colPretJours.HeaderText = "Durée"; this.colPretJours.Width = 100;
+            this.colPretId.Name = "colPretId"; this.colPretId.HeaderText = "ID"; this.colPretId.Visible = false;
+            this.colPretAdherent.Name = "colPretAdherent"; this.colPretAdherent.HeaderText = "Adhérent";
+            this.colPretCode.Name = "colPretCode"; this.colPretCode.HeaderText = "Code";
+            this.colPretMarque.Name = "colPretMarque"; this.colPretMarque.HeaderText = "Marque";
+            this.colPretDate.Name = "colPretDate"; this.colPretDate.HeaderText = "Début";
+            this.colPretJours.Name = "colPretJours"; this.colPretJours.HeaderText = "Durée";
 
             // ── Tab Retards ───────────────────────────────────────────
-            this.tabRetards.Text = "⚠️  Retards";
-            this.tabRetards.Padding = new System.Windows.Forms.Padding(5);
+            this.tabRetards.Text = "Retards";
+            this.tabRetards.Padding = new System.Windows.Forms.Padding(8);
+            this.tabRetards.BackColor = System.Drawing.Color.White;
             this.tabRetards.Controls.AddRange(new System.Windows.Forms.Control[]
-                { this.dgvRetards, this.lblRetardsCount });
+                { this.dgvRetards, this.pnlRechercheRetards });
 
-            this.lblRetardsCount.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblRetardsCount.Height = 30;
+            this.pnlRechercheRetards.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlRechercheRetards.Height = 56;
+            this.pnlRechercheRetards.BackColor = System.Drawing.Color.White;
+            this.pnlRechercheRetards.Padding = new System.Windows.Forms.Padding(10, 12, 10, 10);
+            this.pnlRechercheRetards.Controls.AddRange(new System.Windows.Forms.Control[]
+                { this.lblRechercheRetards, this.txtRechercheRetards, this.lblRetardsCount });
+
+            this.lblRechercheRetards.Text = "Recherche";
+            this.lblRechercheRetards.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblRechercheRetards.ForeColor = System.Drawing.Color.FromArgb(50, 60, 80);
+            this.lblRechercheRetards.AutoSize = true;
+            this.lblRechercheRetards.Location = new System.Drawing.Point(10, 18);
+
+            this.txtRechercheRetards.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtRechercheRetards.Location = new System.Drawing.Point(95, 14);
+            this.txtRechercheRetards.Size = new System.Drawing.Size(380, 28);
+            this.txtRechercheRetards.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtRechercheRetards.ForeColor = System.Drawing.Color.Black;       // CHANGÉ
+            this.txtRechercheRetards.Text = string.Empty;                          // CHANGÉ
+            this.txtRechercheRetards.GotFocus -= (s, e) => { if (this.txtRechercheRetards.ForeColor == System.Drawing.Color.Gray) { this.txtRechercheRetards.Text = ""; this.txtRechercheRetards.ForeColor = System.Drawing.Color.Black; } }; // CHANGÉ
+            this.txtRechercheRetards.LostFocus -= (s, e) => { if (string.IsNullOrWhiteSpace(this.txtRechercheRetards.Text)) { this.txtRechercheRetards.Text = "Rechercher par adhérent, code, marque, type..."; this.txtRechercheRetards.ForeColor = System.Drawing.Color.Gray; } }; // CHANGÉ
+            this.txtRechercheRetards.TextChanged += new System.EventHandler(this.txtRechercheRetards_TextChanged);
+
             this.lblRetardsCount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.lblRetardsCount.Padding = new System.Windows.Forms.Padding(5, 8, 0, 0);
+            this.lblRetardsCount.ForeColor = System.Drawing.Color.FromArgb(180, 30, 30);
+            this.lblRetardsCount.AutoSize = true;
+            this.lblRetardsCount.Location = new System.Drawing.Point(490, 18);
 
             ConfigurerDataGridView(this.dgvRetards);
             this.dgvRetards.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -274,12 +368,12 @@
                 this.colRetDate, this.colRetJours, this.colRetType
             });
 
-            this.colRetAdherent.Name = "colRetAdherent"; this.colRetAdherent.HeaderText = "Adhérent"; this.colRetAdherent.Width = 200;
-            this.colRetCode.Name = "colRetCode"; this.colRetCode.HeaderText = "Code"; this.colRetCode.Width = 110;
-            this.colRetMarque.Name = "colRetMarque"; this.colRetMarque.HeaderText = "Marque"; this.colRetMarque.Width = 110;
-            this.colRetDate.Name = "colRetDate"; this.colRetDate.HeaderText = "Début"; this.colRetDate.Width = 110;
-            this.colRetJours.Name = "colRetJours"; this.colRetJours.HeaderText = "Jours"; this.colRetJours.Width = 90;
-            this.colRetType.Name = "colRetType"; this.colRetType.HeaderText = "Type retard"; this.colRetType.Width = 200;
+            this.colRetAdherent.Name = "colRetAdherent"; this.colRetAdherent.HeaderText = "Adhérent";
+            this.colRetCode.Name = "colRetCode"; this.colRetCode.HeaderText = "Code";
+            this.colRetMarque.Name = "colRetMarque"; this.colRetMarque.HeaderText = "Marque";
+            this.colRetDate.Name = "colRetDate"; this.colRetDate.HeaderText = "Début";
+            this.colRetJours.Name = "colRetJours"; this.colRetJours.HeaderText = "Jours";
+            this.colRetType.Name = "colRetType"; this.colRetType.HeaderText = "Type retard";
 
             // ── GestionForm ───────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -298,9 +392,11 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GestionForm_FormClosed);
 
             this.pnlTop.ResumeLayout(false);
-            this.pnlTop.PerformLayout();
+            this.tlpTop.ResumeLayout(false);
             this.pnlKpi.ResumeLayout(false);
+            this.tlpKpi.ResumeLayout(false);
             this.pnlGauche.ResumeLayout(false);
+            this.flpActions.ResumeLayout(false);
             this.pnlContenu.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.tabStock.ResumeLayout(false);
@@ -315,40 +411,41 @@
         // ── Helpers Designer ─────────────────────────────────────────
 
         private void ConstruireKpi(System.Windows.Forms.Panel pnl,
-                                   System.Windows.Forms.Label lblLib,
-                                   System.Windows.Forms.Label lblVal,
-                                   string libelle,
-                                   System.Drawing.Color couleur,
-                                   int x, int y)
+                           System.Windows.Forms.Label lblLib,
+                           System.Windows.Forms.Label lblVal,
+                           string libelle,
+                           System.Drawing.Color couleur)
         {
             pnl.BackColor = System.Drawing.Color.White;
-            pnl.Size = new System.Drawing.Size(265, 72);
-            pnl.Location = new System.Drawing.Point(x, y);
+            pnl.Dock = System.Windows.Forms.DockStyle.Fill;
+            pnl.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            pnl.Padding = new System.Windows.Forms.Padding(12, 10, 12, 10);
 
             lblLib.Text = libelle;
             lblLib.Font = new System.Drawing.Font("Segoe UI", 8.5F);
             lblLib.ForeColor = System.Drawing.Color.Gray;
             lblLib.AutoSize = true;
-            lblLib.Location = new System.Drawing.Point(12, 10);
+            lblLib.Location = new System.Drawing.Point(0, 0);
 
             lblVal.Text = "—";
             lblVal.Font = new System.Drawing.Font("Segoe UI", 26F, System.Drawing.FontStyle.Bold);
             lblVal.ForeColor = couleur;
             lblVal.AutoSize = true;
-            lblVal.Location = new System.Drawing.Point(12, 28);
+            lblVal.Location = new System.Drawing.Point(0, 20);
 
             pnl.Controls.Add(lblLib);
             pnl.Controls.Add(lblVal);
         }
 
         private void ConstruireBoutonNav(System.Windows.Forms.Button btn,
-                                          string texte, int top,
+                                          string texte,
                                           System.EventHandler handler)
         {
             btn.Text = texte;
-            btn.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            btn.Size = new System.Drawing.Size(178, 40);
-            btn.Location = new System.Drawing.Point(0, top);
+            btn.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            btn.Width = 178;
+            btn.Height = 42;
+            btn.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
             btn.BackColor = System.Drawing.Color.FromArgb(15, 32, 65);
             btn.ForeColor = System.Drawing.Color.White;
             btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -356,6 +453,26 @@
             btn.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             btn.Padding = new System.Windows.Forms.Padding(8, 0, 0, 0);
             btn.Cursor = System.Windows.Forms.Cursors.Hand;
+            btn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(22, 45, 90);
+            btn.Click += handler;
+        }
+
+        private void ConstruireBoutonNavSecondaire(System.Windows.Forms.Button btn,
+                                          string texte,
+                                          System.EventHandler handler)
+        {
+            btn.Text = texte;
+            btn.Font = new System.Drawing.Font("Segoe UI", 9F);
+            btn.Width = 178;
+            btn.Height = 32;
+            btn.Margin = new System.Windows.Forms.Padding(0, 10, 0, 0);
+            btn.BackColor = System.Drawing.Color.White;
+            btn.ForeColor = System.Drawing.Color.FromArgb(100, 110, 130);
+            btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 1;
+            btn.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(200, 205, 215);
+            btn.Cursor = System.Windows.Forms.Cursors.Hand;
+            btn.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(240, 243, 250);
             btn.Click += handler;
         }
 
@@ -369,16 +486,23 @@
             dgv.ReadOnly = true;
             dgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             dgv.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            dgv.EnableHeadersVisualStyles = false;
+            dgv.MultiSelect = false;
+
             dgv.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(240, 243, 250);
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(50, 60, 80);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(240, 243, 250);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = System.Drawing.Color.FromArgb(50, 60, 80);
             dgv.ColumnHeadersHeight = 36;
+
             dgv.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dgv.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(55, 60, 70);
+            dgv.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
+
             dgv.RowTemplate.Height = 30;
             dgv.GridColor = System.Drawing.Color.FromArgb(230, 235, 245);
             dgv.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            dgv.EnableHeadersVisualStyles = false;
-            dgv.MultiSelect = false;
         }
 
         #endregion
@@ -404,7 +528,6 @@
         private System.Windows.Forms.Label lblKpiRetards;
 
         private System.Windows.Forms.Panel pnlGauche;
-        private System.Windows.Forms.Panel pnlActions;
         private System.Windows.Forms.Button btnAjouterMateriel;
         private System.Windows.Forms.Button btnNouveauPret;
         private System.Windows.Forms.Button btnNouveauRetour;
@@ -419,10 +542,18 @@
         private System.Windows.Forms.Label lblRecherche;
         private System.Windows.Forms.Label lblStockCount;
         private System.Windows.Forms.DataGridView dgvStock;
+
         private System.Windows.Forms.TabPage tabPrets;
+        private System.Windows.Forms.Panel pnlRecherchePrets;
+        private System.Windows.Forms.TextBox txtRecherchePrets;
+        private System.Windows.Forms.Label lblRecherchePrets;
         private System.Windows.Forms.Label lblPretsCount;
         private System.Windows.Forms.DataGridView dgvPrets;
+
         private System.Windows.Forms.TabPage tabRetards;
+        private System.Windows.Forms.Panel pnlRechercheRetards;
+        private System.Windows.Forms.TextBox txtRechercheRetards;
+        private System.Windows.Forms.Label lblRechercheRetards;
         private System.Windows.Forms.Label lblRetardsCount;
         private System.Windows.Forms.DataGridView dgvRetards;
 
