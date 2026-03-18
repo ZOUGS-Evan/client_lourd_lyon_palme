@@ -34,3 +34,5 @@ _ReSharper*/
 # Temp
 *.tmp
 *.userprefs
+
+App.config
