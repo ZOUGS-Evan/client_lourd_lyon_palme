@@ -27,34 +27,20 @@ namespace LyonPalme.Models
         public int JoursEnPret { get; set; }
 
         /// <summary>Indique si le prêt est toujours en cours.</summary>
-        public bool EstEnCours
-        {
-            get { return DateFin == null; }
-        }
+        public bool EstEnCours => DateFin == null;
 
         /// <summary>Indique si le prêt dépasse 30 jours sans retour.</summary>
-        public bool EstEnRetard
-        {
-            get
-            {
-                return EstEnCours &&
-                       (DateTime.Today - DateDebut).TotalDays > 30;
-            }
-        }
-
-        private readonly DBInterface _db;
+        public bool EstEnRetard => EstEnCours && (DateTime.Today - DateDebut).TotalDays > 30;
 
         // ── Constructeurs ────────────────────────────────────────────
 
         public Pret()
         {
-            _db = new DBInterface();
             DateDebut = DateTime.Today;
         }
 
         public Pret(PretEnCoursDTO dto)
         {
-            _db = new DBInterface();
             Id = dto.IdPret;
             DateDebut = dto.DateDebut;
             DateFin = dto.DateFin;
@@ -68,27 +54,22 @@ namespace LyonPalme.Models
         // ── Méthodes métier ──────────────────────────────────────────
 
         /// <summary>
-        /// Enregistre ce prêt en base.
-        /// Calcule l'ID automatiquement.
+        /// Enregistre ce prêt en base. Calcule l'ID automatiquement.
         /// Lève une exception si le matériel est déjà prêté (trigger SQL).
         /// </summary>
         public void Enregistrer()
         {
-            if (IdMateriel <= 0)
-                throw new ArgumentException("IdMateriel non renseigné.");
-            if (IdAdherent <= 0)
-                throw new ArgumentException("IdAdherent non renseigné.");
+            if (IdMateriel <= 0) throw new ArgumentException("IdMateriel non renseigné.");
+            if (IdAdherent <= 0) throw new ArgumentException("IdAdherent non renseigné.");
 
-            int nextId = _db.GetNextId("Pret");
-            Id = _db.EnregistrerPret(nextId, IdMateriel, IdAdherent, DateDebut);
+            int nextId = DBInterface.GetNextId("Pret");
+            Id = DBInterface.EnregistrerPret(nextId, IdMateriel, IdAdherent, DateDebut);
         }
 
-        /// <summary>Retourne une représentation lisible du prêt.</summary>
         public override string ToString()
         {
-            return string.Format("Prêt #{0} — {1} {2} / {3} depuis le {4:dd/MM/yyyy}",
-                Id, NomAdherent, PrenomAdherent,
-                CodeMateriel, DateDebut);
+            return string.Format("Prêt #{0} à {1} {2} / {3} depuis le {4:dd/MM/yyyy}",
+                Id, NomAdherent, PrenomAdherent, CodeMateriel, DateDebut);
         }
     }
 }

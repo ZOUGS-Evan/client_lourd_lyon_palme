@@ -20,23 +20,14 @@ namespace LyonPalme.Models
         public DateTime DateDeNaissance { get; set; }
 
         /// <summary>Nom complet formaté : "Nom Prénom".</summary>
-        public string NomComplet
-        {
-            get { return Nom + " " + Prenom; }
-        }
-
-        private readonly DBInterface _db;
+        public string NomComplet => Nom + " " + Prenom;
 
         // ── Constructeurs ────────────────────────────────────────────
 
-        public Adherent()
-        {
-            _db = new DBInterface();
-        }
+        public Adherent() { }
 
         public Adherent(AdherentDTO dto)
         {
-            _db = new DBInterface();
             Id = dto.Id;
             Nom = dto.Nom;
             Prenom = dto.Prenom;
@@ -51,8 +42,8 @@ namespace LyonPalme.Models
         /// </summary>
         public void Ajouter()
         {
-            int nextId = _db.GetNextId("Adherent");
-            Id = _db.AjouterAdherent(nextId, Nom, Prenom, Role, DateDeNaissance);
+            int nextId = DBInterface.GetNextId("Adherent");
+            Id = DBInterface.AjouterAdherent(nextId, Nom, Prenom, Role, DateDeNaissance);
         }
 
         /// <summary>
@@ -60,7 +51,7 @@ namespace LyonPalme.Models
         /// </summary>
         public List<HistoriqueDTO> GetHistoriquePrets()
         {
-            return _db.GetPretsAdherent(Id);
+            return DBInterface.GetPretsAdherent(Id);
         }
 
         /// <summary>Retourne une représentation lisible de l'adhérent.</summary>

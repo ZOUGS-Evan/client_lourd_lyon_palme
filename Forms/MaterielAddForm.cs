@@ -1,4 +1,4 @@
-using LyonPalme.Models;
+using LyonPalme.DataAccess;
 using System;
 using System.Windows.Forms;
 
@@ -11,8 +11,6 @@ namespace LyonPalme.Forms
     /// </summary>
     public partial class MaterielAddForm : Form
     {
-        private readonly Gestion _gestion = Gestion.getInstance();
-
         public MaterielAddForm()
         {
             InitializeComponent();
@@ -20,22 +18,13 @@ namespace LyonPalme.Forms
 
         private void MaterielAddForm_Load(object sender, EventArgs e)
         {
-            cboType.Items.AddRange(new string[]
-            {
-                "Monopalme", "Tuba_frontal", "Combinaison", "Lunette"
-            });
+            cboType.Items.AddRange(new string[] { "Monopalme", "Tuba_frontal", "Combinaison", "Lunette" });
             cboType.SelectedIndex = 0;
 
-            cboEtat.Items.AddRange(new string[]
-            {
-                "Bon etat", "Use", "Hors service"
-            });
+            cboEtat.Items.AddRange(new string[] { "Bon etat", "Use", "Hors service" });
             cboEtat.SelectedIndex = 0;
 
-            cboTenuSaison.Items.AddRange(new string[]
-            {
-                "Ete", "Hiver"
-            });
+            cboTenuSaison.Items.AddRange(new string[] { "Ete", "Hiver" });
             cboTenuSaison.SelectedIndex = 0;
 
             MettreAJourChampsSpecifiques();
@@ -50,22 +39,18 @@ namespace LyonPalme.Forms
         private void MettreAJourChampsSpecifiques()
         {
             string type = cboType.SelectedItem != null ? cboType.SelectedItem.ToString() : "";
-
             bool isMono = type == "Monopalme";
-            bool isTubaOuComb = type == "Tuba_frontal" || type == "Combinaison";
+            bool isTubaComb = type == "Tuba_frontal" || type == "Combinaison";
             bool isComb = type == "Combinaison";
 
-            // Pointure et Matériaux (Monopalme)
             lblPointure.Visible = isMono;
             txtPointure.Visible = isMono;
             lblMateriaux.Visible = isMono;
             txtMateriaux.Visible = isMono;
 
-            // Taille (Tuba + Combinaison)
-            lblTaille.Visible = isTubaOuComb;
-            txtTaille.Visible = isTubaOuComb;
+            lblTaille.Visible = isTubaComb;
+            txtTaille.Visible = isTubaComb;
 
-            // Saison (Combinaison)
             lblTenuSaison.Visible = isComb;
             cboTenuSaison.Visible = isComb;
         }
@@ -73,32 +58,21 @@ namespace LyonPalme.Forms
         private void btnValider_Click(object sender, EventArgs e)
         {
             if (!Valider()) return;
-
             try
             {
-                var db = new DataAccess.DBInterface();
                 string type = cboType.SelectedItem.ToString();
+                int nextId = DBInterface.GetNextId("Materiel");
 
-                int nextId = db.GetNextId("Materiel");
-
-                // Préparation des variables nullables
-                string taille = (type == "Tuba_frontal" || type == "Combinaison")
-                                  ? txtTaille.Text.Trim() : null;
-
-                string materiaux = (type == "Monopalme")
-                                  ? txtMateriaux.Text.Trim() : null;
-
-                string saison = (type == "Combinaison")
-                                  ? cboTenuSaison.SelectedItem.ToString() : null;
+                string taille = (type == "Tuba_frontal" || type == "Combinaison") ? txtTaille.Text.Trim() : null;
+                string materiaux = type == "Monopalme" ? txtMateriaux.Text.Trim() : null;
+                string saison = type == "Combinaison" ? cboTenuSaison.SelectedItem.ToString() : null;
 
                 int? pointure = null;
                 if (type == "Monopalme" && int.TryParse(txtPointure.Text.Trim(), out int p))
-                {
                     pointure = p;
-                }
 
-                // Ajout en base
-                db.AjouterMateriel(nextId,
+                DBInterface.AjouterMateriel(
+                    nextId,
                     txtCode.Text.Trim().ToUpper(),
                     txtMarque.Text.Trim(),
                     cboEtat.SelectedItem.ToString(),
@@ -121,43 +95,24 @@ namespace LyonPalme.Forms
         private bool Valider()
         {
             if (string.IsNullOrWhiteSpace(txtCode.Text))
-            {
-                AfficherErreur("Le code est obligatoire.");
-                txtCode.Focus();
-                return false;
-            }
+            { AfficherErreur("Le code est obligatoire."); txtCode.Focus(); return false; }
+
             if (string.IsNullOrWhiteSpace(txtMarque.Text))
-            {
-                AfficherErreur("La marque est obligatoire.");
-                txtMarque.Focus();
-                return false;
-            }
+            { AfficherErreur("La marque est obligatoire."); txtMarque.Focus(); return false; }
 
             string type = cboType.SelectedItem != null ? cboType.SelectedItem.ToString() : "";
-            
+
             if (type == "Monopalme")
             {
                 if (string.IsNullOrWhiteSpace(txtMateriaux.Text))
-                {
-                    AfficherErreur("Les matériaux sont obligatoires pour une Monopalme.");
-                    txtMateriaux.Focus();
-                    return false;
-                }
+                { AfficherErreur("Les matériaux sont obligatoires pour une Monopalme."); txtMateriaux.Focus(); return false; }
                 if (string.IsNullOrWhiteSpace(txtPointure.Text))
-                {
-                    AfficherErreur("La pointure est obligatoire pour une Monopalme.");
-                    txtPointure.Focus();
-                    return false;
-                }
+                { AfficherErreur("La pointure est obligatoire pour une Monopalme."); txtPointure.Focus(); return false; }
             }
             else if (type == "Tuba_frontal" || type == "Combinaison")
             {
                 if (string.IsNullOrWhiteSpace(txtTaille.Text))
-                {
-                    AfficherErreur("La taille est obligatoire pour ce type.");
-                    txtTaille.Focus();
-                    return false;
-                }
+                { AfficherErreur("La taille est obligatoire pour ce type."); txtTaille.Focus(); return false; }
             }
 
             lblMessage.Text = string.Empty;
@@ -177,15 +132,9 @@ namespace LyonPalme.Forms
         }
 
         private void AfficherErreur(string msg)
-        {
-            lblMessage.Text = msg;
-            lblMessage.ForeColor = System.Drawing.Color.Crimson;
-        }
+        { lblMessage.Text = msg; lblMessage.ForeColor = System.Drawing.Color.Crimson; }
 
         private void AfficherSucces(string msg)
-        {
-            lblMessage.Text = msg;
-            lblMessage.ForeColor = System.Drawing.Color.ForestGreen;
-        }
+        { lblMessage.Text = msg; lblMessage.ForeColor = System.Drawing.Color.ForestGreen; }
     }
 }

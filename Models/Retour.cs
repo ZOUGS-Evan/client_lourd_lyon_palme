@@ -24,9 +24,7 @@ namespace LyonPalme.Models
         public string PrenomAdherent { get; set; }
         public string CodeMateriel { get; set; }
 
-        private readonly DBInterface _db;
-
-        // ── États possibles du matériel au retour ────────────────────
+        // ── États possibles du matériel au retour ─────────────────────
 
         public static readonly string[] EtatsPossibles =
         {
@@ -40,14 +38,12 @@ namespace LyonPalme.Models
 
         public Retour()
         {
-            _db = new DBInterface();
             DateRetour = DateTime.Today;
             Etat = "Bon etat";
         }
 
         public Retour(int idPret)
         {
-            _db = new DBInterface();
             IdPret = idPret;
             DateRetour = DateTime.Today;
             Etat = "Bon etat";
@@ -56,28 +52,23 @@ namespace LyonPalme.Models
         // ── Méthodes métier ──────────────────────────────────────────
 
         /// <summary>
-        /// Enregistre ce retour en base.
-        /// Calcule l'ID automatiquement.
+        /// Enregistre ce retour en base. Calcule l'ID automatiquement.
         /// Le trigger SQL met à jour Pret.dateFin = DateRetour.
         /// Lève une exception si un retour existe déjà pour ce prêt.
         /// </summary>
         public void Enregistrer()
         {
-            if (IdPret <= 0)
-                throw new ArgumentException("IdPret non renseigné.");
-            if (string.IsNullOrEmpty(Etat))
-                throw new ArgumentException("L'état du matériel au retour est obligatoire.");
+            if (IdPret <= 0) throw new ArgumentException("IdPret non renseigné.");
+            if (string.IsNullOrEmpty(Etat)) throw new ArgumentException("L'état du matériel au retour est obligatoire.");
 
-            int nextId = _db.GetNextId("Retour");
-            Id = _db.EnregistrerRetour(nextId, IdPret, Etat, DateRetour);
+            int nextId = DBInterface.GetNextId("Retour");
+            Id = DBInterface.EnregistrerRetour(nextId, IdPret, Etat, DateRetour);
         }
 
-        /// <summary>Retourne une représentation lisible du retour.</summary>
         public override string ToString()
         {
             return string.Format("Retour #{0} — Prêt #{1} / {2} le {3:dd/MM/yyyy} ({4})",
-                Id, IdPret, CodeMateriel ?? "?",
-                DateRetour, Etat);
+                Id, IdPret, CodeMateriel ?? "?", DateRetour, Etat);
         }
     }
 }

@@ -1,8 +1,6 @@
 using LyonPalme.DataAccess;
-using LyonPalme.Models;
 using System;
 using System.Windows.Forms;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace LyonPalme.Forms
 {
@@ -14,7 +12,6 @@ namespace LyonPalme.Forms
     public partial class MaterielEditForm : Form
     {
         private readonly MaterielDTO _dto;
-        private readonly DBInterface _db = new DBInterface();
 
         public MaterielEditForm(MaterielDTO dto)
         {
@@ -26,13 +23,11 @@ namespace LyonPalme.Forms
         {
             cboEtat.Items.AddRange(new string[] { "Bon etat", "Use", "Hors service" });
 
-            // Pré-remplir les champs
+            // Pré-remplir les champs communs
             txtCode.Text = _dto.Code;
             txtMarque.Text = _dto.Marque;
-
             int etatIdx = cboEtat.Items.IndexOf(_dto.Etat);
             cboEtat.SelectedIndex = etatIdx >= 0 ? etatIdx : 0;
-
             lblTypeValeur.Text = _dto.TypeMateriel;
 
             // Champs spécifiques
@@ -70,7 +65,6 @@ namespace LyonPalme.Forms
         private void btnValider_Click(object sender, EventArgs e)
         {
             if (!Valider()) return;
-
             try
             {
                 int? pointure = null;
@@ -90,7 +84,8 @@ namespace LyonPalme.Forms
                         saison = cboSaison.SelectedItem.ToString();
                 }
 
-                _db.ModifierMateriel(_dto.Id,
+                DBInterface.ModifierMateriel(
+                    _dto.Id,
                     txtCode.Text.Trim().ToUpper(),
                     txtMarque.Text.Trim(),
                     cboEtat.SelectedItem.ToString(),
@@ -113,10 +108,13 @@ namespace LyonPalme.Forms
         {
             if (string.IsNullOrWhiteSpace(txtCode.Text))
             { AfficherErreur("Le code est obligatoire."); txtCode.Focus(); return false; }
+
             if (string.IsNullOrWhiteSpace(txtMarque.Text))
             { AfficherErreur("La marque est obligatoire."); txtMarque.Focus(); return false; }
+
             if (_dto.TypeMateriel == "Monopalme" && string.IsNullOrWhiteSpace(txtMateriaux.Text))
             { AfficherErreur("Les matériaux sont obligatoires."); txtMateriaux.Focus(); return false; }
+
             lblMessage.Text = string.Empty;
             return true;
         }

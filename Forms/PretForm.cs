@@ -14,7 +14,6 @@ namespace LyonPalme.Forms
     public partial class PretForm : Form
     {
         private readonly Gestion _gestion = Gestion.getInstance();
-        private readonly DBInterface _db = new DBInterface();
 
         private List<AdherentDTO> _adherents;
         private List<MaterielDTO> _materiels;
@@ -28,7 +27,6 @@ namespace LyonPalme.Forms
         {
             dtpDateDebut.Value = DateTime.Today;
             dtpDateDebut.MaxDate = DateTime.Today;
-
             ChargerAdherents();
             ChargerMateriels();
         }
@@ -37,10 +35,10 @@ namespace LyonPalme.Forms
         {
             try
             {
-                _adherents = _gestion.GetAdherents();
+                _adherents = DBInterface.GetAdherents();
                 cboAdherent.Items.Clear();
                 foreach (AdherentDTO a in _adherents)
-                    cboAdherent.Items.Add(a.Nom + " " + a.Prenom + " (" + (a.Role ?? "—") + ")");
+                    cboAdherent.Items.Add(a.Nom + " " + a.Prenom + " (" + (a.Role ?? "") + ")");
             }
             catch (Exception ex)
             {
@@ -52,8 +50,7 @@ namespace LyonPalme.Forms
         {
             try
             {
-                // Charger uniquement les matériels disponibles
-                List<MaterielDTO> tous = _gestion.GetStock();
+                List<MaterielDTO> tous = DBInterface.GetStock();
                 _materiels = new List<MaterielDTO>();
                 cboMateriel.Items.Clear();
 
@@ -79,17 +76,16 @@ namespace LyonPalme.Forms
         private void btnValider_Click(object sender, EventArgs e)
         {
             if (!Valider()) return;
-
             try
             {
                 int idAdherent = _adherents[cboAdherent.SelectedIndex].Id;
                 int idMateriel = _materiels[cboMateriel.SelectedIndex].Id;
+                int nextId = DBInterface.GetNextId("Pret");
 
-                int nextId = _db.GetNextId("Pret");
-                _db.EnregistrerPret(nextId, idMateriel, idAdherent, dtpDateDebut.Value.Date);
+                DBInterface.EnregistrerPret(nextId, idMateriel, idAdherent, dtpDateDebut.Value.Date);
 
                 AfficherSucces("Prêt enregistré avec succès !");
-                ChargerMateriels(); // Actualiser la liste des dispo
+                ChargerMateriels();
                 cboMateriel.SelectedIndex = -1;
                 cboAdherent.SelectedIndex = -1;
             }

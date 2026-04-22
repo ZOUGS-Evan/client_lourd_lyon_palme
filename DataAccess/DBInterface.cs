@@ -11,9 +11,10 @@ namespace LyonPalme.DataAccess
     // DBInterface.cs
     // Auteur      : R. Fonseca
     // Date        : 11/03/2026
-    // Description : Couche d'accès aux données.
+    // Description : Couche d'accès aux données — classe 100 % statique.
     //               Toutes les interactions avec SQL Server passent
     //               par cette classe via des procédures stockées.
+    //               Appel : DBInterface.NomDeLaMethode(...)
     // ================================================================
 
     // ── DTOs ─────────────────────────────────────────────────────────
@@ -99,9 +100,9 @@ namespace LyonPalme.DataAccess
         public string Prenom { get; set; }
     }
 
-    // ── DBInterface ──────────────────────────────────────────────────
+    // ── DBInterface (classe statique) ────────────────────────────────
 
-    public class DBInterface
+    public static class DBInterface
     {
         // ── Helpers privés ───────────────────────────────────────────
 
@@ -109,7 +110,7 @@ namespace LyonPalme.DataAccess
         /// Ouvre une connexion via le singleton Connection.
         /// Lève une exception si la connexion échoue.
         /// </summary>
-        private SqlConnection OpenConnection()
+        private static SqlConnection OpenConnection()
         {
             SqlConnection conn = Connection.getInstance().GetConnection();
             if (conn == null)
@@ -183,7 +184,7 @@ namespace LyonPalme.DataAccess
         /// HASHBYTES('SHA2_256') avant comparaison. Ne jamais hasher côté client.
         /// </summary>
         /// <returns>L'utilisateur connecté, ou null si identifiants incorrects.</returns>
-        public UtilisateurDTO Authentifier(string login, string motDePasseClair)
+        public static UtilisateurDTO Authentifier(string login, string motDePasseClair)
         {
             try
             {
@@ -220,7 +221,7 @@ namespace LyonPalme.DataAccess
         /// Les PKs sont sans IDENTITY : appeler avant chaque insertion.
         /// Tables valides : Materiel, Adherent, Pret, Retour.
         /// </summary>
-        public int GetNextId(string nomTable)
+        public static int GetNextId(string nomTable)
         {
             try
             {
@@ -247,7 +248,7 @@ namespace LyonPalme.DataAccess
         // ── Stock ────────────────────────────────────────────────────
 
         /// <summary>Retourne tout le stock avec disponibilité.</summary>
-        public List<MaterielDTO> GetStock()
+        public static List<MaterielDTO> GetStock()
         {
             try
             {
@@ -268,7 +269,7 @@ namespace LyonPalme.DataAccess
         }
 
         /// <summary>Recherche un matériel par code, type ou marque.</summary>
-        public List<MaterielDTO> RechercherMateriel(string recherche)
+        public static List<MaterielDTO> RechercherMateriel(string recherche)
         {
             try
             {
@@ -290,7 +291,7 @@ namespace LyonPalme.DataAccess
         }
 
         /// <summary>Retourne les détails complets d'un matériel.</summary>
-        public MaterielDTO GetDetailsMateriel(int idMateriel)
+        public static MaterielDTO GetDetailsMateriel(int idMateriel)
         {
             try
             {
@@ -314,10 +315,10 @@ namespace LyonPalme.DataAccess
         /// Appeler GetNextId("Materiel") avant.
         /// Pour une Monopalme, materiaux est obligatoire.
         /// </summary>
-        public int AjouterMateriel(int id, string code, string marque, string etat,
-                                   string typeMateriel, int? pointure = null,
-                                   string materiaux = null, string taille = null,
-                                   string tenuSaison = null)
+        public static int AjouterMateriel(int id, string code, string marque, string etat,
+                                          string typeMateriel, int? pointure = null,
+                                          string materiaux = null, string taille = null,
+                                          string tenuSaison = null)
         {
             try
             {
@@ -353,9 +354,9 @@ namespace LyonPalme.DataAccess
         /// Modifie un matériel existant.
         /// Les champs null dans les tables filles ne sont pas écrasés (ISNULL côté SQL).
         /// </summary>
-        public void ModifierMateriel(int idMateriel, string code, string marque, string etat,
-                                     int? pointure = null, string materiaux = null,
-                                     string taille = null, string tenuSaison = null)
+        public static void ModifierMateriel(int idMateriel, string code, string marque, string etat,
+                                            int? pointure = null, string materiaux = null,
+                                            string taille = null, string tenuSaison = null)
         {
             try
             {
@@ -385,7 +386,7 @@ namespace LyonPalme.DataAccess
         /// Bloqué par trigger si le matériel est actuellement prêté.
         /// ON DELETE CASCADE supprime les tables filles automatiquement.
         /// </summary>
-        public void SupprimerMateriel(int idMateriel)
+        public static void SupprimerMateriel(int idMateriel)
         {
             try
             {
@@ -406,7 +407,7 @@ namespace LyonPalme.DataAccess
         // ── Inventaire ───────────────────────────────────────────────
 
         /// <summary>Retourne l'inventaire regroupé par type et taille/pointure.</summary>
-        public List<InventaireDTO> GetInventaire()
+        public static List<InventaireDTO> GetInventaire()
         {
             try
             {
@@ -445,7 +446,7 @@ namespace LyonPalme.DataAccess
         /// Appeler GetNextId("Pret") avant.
         /// Disponibilité vérifiée par le trigger empecher_pret_en_double.
         /// </summary>
-        public int EnregistrerPret(int id, int idMateriel, int idAdherent, DateTime dateDebut)
+        public static int EnregistrerPret(int id, int idMateriel, int idAdherent, DateTime dateDebut)
         {
             try
             {
@@ -473,7 +474,7 @@ namespace LyonPalme.DataAccess
         }
 
         /// <summary>Retourne tous les prêts en cours (dateFin IS NULL).</summary>
-        public List<PretEnCoursDTO> GetPretsEnCours()
+        public static List<PretEnCoursDTO> GetPretsEnCours()
         {
             try
             {
@@ -494,7 +495,7 @@ namespace LyonPalme.DataAccess
         }
 
         /// <summary>Retourne tous les prêts (passés et en cours) d'un adhérent.</summary>
-        public List<HistoriqueDTO> GetPretsAdherent(int idAdherent)
+        public static List<HistoriqueDTO> GetPretsAdherent(int idAdherent)
         {
             try
             {
@@ -522,7 +523,7 @@ namespace LyonPalme.DataAccess
         /// Appeler GetNextId("Retour") avant.
         /// Le trigger trg_retour_cloture_pret met Pret.dateFin à jour automatiquement.
         /// </summary>
-        public int EnregistrerRetour(int id, int idPret, string etat, DateTime dateRetour)
+        public static int EnregistrerRetour(int id, int idPret, string etat, DateTime dateRetour)
         {
             try
             {
@@ -552,7 +553,7 @@ namespace LyonPalme.DataAccess
         // ── Historique ───────────────────────────────────────────────
 
         /// <summary>Retourne l'historique complet des prêts d'un matériel.</summary>
-        public List<HistoriqueDTO> GetHistoriqueMateriel(int idMateriel)
+        public static List<HistoriqueDTO> GetHistoriqueMateriel(int idMateriel)
         {
             try
             {
@@ -576,7 +577,7 @@ namespace LyonPalme.DataAccess
         // ── Retards ──────────────────────────────────────────────────
 
         /// <summary>Retourne les prêts en retard (> 30j actifs ou retours tardifs).</summary>
-        public List<RetardDTO> GetRetards()
+        public static List<RetardDTO> GetRetards()
         {
             try
             {
@@ -599,7 +600,7 @@ namespace LyonPalme.DataAccess
         // ── Adhérents ────────────────────────────────────────────────
 
         /// <summary>Retourne la liste complète des adhérents.</summary>
-        public List<AdherentDTO> GetAdherents()
+        public static List<AdherentDTO> GetAdherents()
         {
             try
             {
@@ -636,8 +637,8 @@ namespace LyonPalme.DataAccess
         /// Appeler GetNextId("Adherent") avant.
         /// La dateDeNaissance est chiffrée côté SQL Server (AES-256).
         /// </summary>
-        public int AjouterAdherent(int id, string nom, string prenom,
-                                   string role = null, DateTime? dateDeNaissance = null)
+        public static int AjouterAdherent(int id, string nom, string prenom,
+                                          string role = null, DateTime? dateDeNaissance = null)
         {
             try
             {
@@ -669,8 +670,8 @@ namespace LyonPalme.DataAccess
         /// Crée ou met à jour un utilisateur.
         /// Mot de passe EN CLAIR : SQL Server applique SHA-256 via HASHBYTES.
         /// </summary>
-        public void SetUtilisateur(int id, string login, string motDePasseClair,
-                                   string nom = null, string prenom = null)
+        public static void SetUtilisateur(int id, string login, string motDePasseClair,
+                                          string nom = null, string prenom = null)
         {
             try
             {
@@ -707,9 +708,9 @@ namespace LyonPalme.DataAccess
                 Materiaux = HasCol(r, "materiaux") ? NullStr(r, "materiaux") : null,
                 TenuSaison = HasCol(r, "tenu_saison") ? NullStr(r, "tenu_saison") : null,
                 Disponibilite = HasCol(r, "disponibilite") && !r.IsDBNull(r.GetOrdinal("disponibilite"))
-                                   ? r.GetString(r.GetOrdinal("disponibilite")) : string.Empty,
+                                       ? r.GetString(r.GetOrdinal("disponibilite")) : string.Empty,
                 NbPretsEnCours = HasCol(r, "nb_prets_en_cours") && !r.IsDBNull(r.GetOrdinal("nb_prets_en_cours"))
-                                   ? r.GetInt32(r.GetOrdinal("nb_prets_en_cours")) : 0
+                                       ? r.GetInt32(r.GetOrdinal("nb_prets_en_cours")) : 0
             };
         }
 

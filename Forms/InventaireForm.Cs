@@ -14,8 +14,6 @@ namespace LyonPalme.Forms
     /// </summary>
     public partial class InventaireForm : Form
     {
-        private readonly Inventaire _inventaire = new Inventaire();
-
         public InventaireForm()
         {
             InitializeComponent();
@@ -30,7 +28,7 @@ namespace LyonPalme.Forms
         {
             try
             {
-                List<InventaireDTO> lignes = _inventaire.GetInventaireComplet();
+                List<InventaireDTO> lignes = DBInterface.GetInventaire();
                 dgvInventaire.Rows.Clear();
 
                 int totalTotal = 0, totalDispo = 0, totalPrete = 0;
@@ -56,20 +54,19 @@ namespace LyonPalme.Forms
                         dgvInventaire.Rows[idx].DefaultCellStyle.BackColor = Color.FromArgb(235, 255, 235);
                 }
 
-                // Totaux
                 lblTotalTotal.Text = totalTotal.ToString();
                 lblTotalDispo.Text = totalDispo.ToString();
                 lblTotalPrete.Text = totalPrete.ToString();
+
                 lblTotalDispo.ForeColor = Color.ForestGreen;
-                lblTotalPrete.ForeColor = totalPrete > 0
-                    ? Color.FromArgb(200, 100, 0) : Color.Gray;
+                lblTotalPrete.ForeColor = totalPrete > 0 ? Color.FromArgb(200, 100, 0) : Color.Gray;
 
                 lblLignesCount.Text = lignes.Count + " ligne(s)";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur : " + ex.Message,
-                    "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Erreur : " + ex.Message, "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -83,4 +80,4 @@ namespace LyonPalme.Forms
             this.Close();
         }
     }
-}   
+}

@@ -13,8 +13,8 @@ namespace LyonPalme.Forms
     /// </summary>
     public partial class RetourForm : Form
     {
-        private readonly DBInterface _db = new DBInterface();
         private readonly Gestion _gestion = Gestion.getInstance();
+
         private List<PretEnCoursDTO> _prets;
 
         public RetourForm()
@@ -26,10 +26,8 @@ namespace LyonPalme.Forms
         {
             dtpDateRetour.Value = DateTime.Today;
             dtpDateRetour.MaxDate = DateTime.Today;
-
             cboEtat.Items.AddRange(Retour.EtatsPossibles);
             cboEtat.SelectedIndex = 0;
-
             ChargerPretsEnCours();
         }
 
@@ -37,7 +35,7 @@ namespace LyonPalme.Forms
         {
             try
             {
-                _prets = _gestion.GetPretsEnCours();
+                _prets = DBInterface.GetPretsEnCours();
                 cboPret.Items.Clear();
 
                 foreach (PretEnCoursDTO p in _prets)
@@ -76,7 +74,7 @@ namespace LyonPalme.Forms
             {
                 lblInfoPret.ForeColor = System.Drawing.Color.Crimson;
                 lblRetard.Visible = true;
-                lblRetard.Text = "⚠ Prêt en retard de " + (jours - 30) + " jour(s)";
+                lblRetard.Text = "Prêt en retard de " + (jours - 30) + " jour(s)";
             }
             else
             {
@@ -88,13 +86,13 @@ namespace LyonPalme.Forms
         private void btnValider_Click(object sender, EventArgs e)
         {
             if (!Valider()) return;
-
             try
             {
                 int idPret = _prets[cboPret.SelectedIndex].IdPret;
-                int nextId = _db.GetNextId("Retour");
+                int nextId = DBInterface.GetNextId("Retour");
 
-                _db.EnregistrerRetour(nextId, idPret,
+                DBInterface.EnregistrerRetour(
+                    nextId, idPret,
                     cboEtat.SelectedItem.ToString(),
                     dtpDateRetour.Value.Date);
 

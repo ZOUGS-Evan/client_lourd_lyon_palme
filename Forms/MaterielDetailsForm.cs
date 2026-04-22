@@ -10,8 +10,6 @@ namespace LyonPalme.Forms
     public partial class MaterielDetailsForm : Form
     {
         private readonly MaterielDTO _dto;
-        private readonly DBInterface _db = new DBInterface();
-        private readonly Gestion _gestion = Gestion.getInstance();
 
         public MaterielDetailsForm(MaterielDTO dto)
         {
@@ -36,10 +34,12 @@ namespace LyonPalme.Forms
 
             lblDispoValeur.ForeColor = _dto.Disponibilite == "Disponible"
                 ? Color.ForestGreen : Color.Crimson;
+
             btnSupprimer.Enabled = _dto.Disponibilite == "Disponible";
 
             if (!string.IsNullOrEmpty(_dto.Materiaux))
             { lblMateriauxLib.Visible = true; lblMateriauxValeur.Visible = true; lblMateriauxValeur.Text = _dto.Materiaux; }
+
             if (!string.IsNullOrEmpty(_dto.TenuSaison))
             { lblSaisonLib.Visible = true; lblSaisonValeur.Visible = true; lblSaisonValeur.Text = _dto.TenuSaison; }
         }
@@ -48,8 +48,9 @@ namespace LyonPalme.Forms
         {
             try
             {
-                List<HistoriqueDTO> hist = _db.GetHistoriqueMateriel(_dto.Id);
+                List<HistoriqueDTO> hist = DBInterface.GetHistoriqueMateriel(_dto.Id);
                 dgvHistorique.Rows.Clear();
+
                 foreach (HistoriqueDTO h in hist)
                 {
                     int idx = dgvHistorique.Rows.Add(
@@ -57,33 +58,54 @@ namespace LyonPalme.Forms
                         h.DateDebut.ToString("dd/MM/yyyy"),
                         h.DateFin.HasValue ? h.DateFin.Value.ToString("dd/MM/yyyy") : "En cours",
                         h.DateRetour.HasValue ? h.DateRetour.Value.ToString("dd/MM/yyyy") : "—",
-                        h.EtatRetour ?? "—");
+                        h.EtatRetour ?? "—"
+                    );
+
                     if (!h.DateFin.HasValue)
                         dgvHistorique.Rows[idx].DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 235);
                 }
+
                 lblHistoriqueCount.Text = hist.Count + " prêt(s) au total";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur : " + ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Erreur : " + ex.Message, "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnModifier_Click(object sender, EventArgs e)
         {
             new MaterielEditForm(_dto).ShowDialog(this);
-            MaterielDTO u = _db.GetDetailsMateriel(_dto.Id);
-            if (u != null) { lblCodeValeur.Text = u.Code; lblMarqueValeur.Text = u.Marque; lblEtatValeur.Text = u.Etat; }
+
+            MaterielDTO u = DBInterface.GetDetailsMateriel(_dto.Id);
+            if (u != null)
+            {
+                lblCodeValeur.Text = u.Code;
+                lblMarqueValeur.Text = u.Marque;
+                lblEtatValeur.Text = u.Etat;
+            }
         }
 
         private void btnSupprimer_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Supprimer " + _dto.Code + " ?", "Confirmation",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
-            try { _db.SupprimerMateriel(_dto.Id); this.Close(); }
-            catch (Exception ex) { MessageBox.Show("Erreur : " + ex.Message, "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            try
+            {
+                DBInterface.SupprimerMateriel(_dto.Id);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erreur : " + ex.Message, "Erreur",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void btnFermer_Click(object sender, EventArgs e) { this.Close(); }
+        private void btnFermer_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }

@@ -31,14 +31,10 @@ namespace LyonPalme.Models
         public UtilisateurDTO UtilisateurConnecte { get; private set; }
 
         /// <summary>Indique si un responsable est actuellement connecté.</summary>
-        public bool EstConnecte
-        {
-            get { return UtilisateurConnecte != null; }
-        }
+        public bool EstConnecte => UtilisateurConnecte != null;
 
         // ── Références ───────────────────────────────────────────────
 
-        private readonly DBInterface _db;
         public readonly Inventaire Inventaire;
         public readonly Historique Historique;
 
@@ -46,7 +42,6 @@ namespace LyonPalme.Models
 
         private Gestion()
         {
-            _db = new DBInterface();
             Inventaire = new Inventaire();
             Historique = new Historique();
         }
@@ -59,7 +54,7 @@ namespace LyonPalme.Models
         /// <returns>True si les identifiants sont corrects.</returns>
         public bool Connecter(string login, string motDePasse)
         {
-            UtilisateurDTO user = _db.Authentifier(login, motDePasse);
+            UtilisateurDTO user = DBInterface.Authentifier(login, motDePasse);
             if (user != null)
             {
                 UtilisateurConnecte = user;
@@ -79,7 +74,7 @@ namespace LyonPalme.Models
         /// <summary>Retourne tout le stock avec disponibilité.</summary>
         public List<MaterielDTO> GetStock()
         {
-            return _db.GetStock();
+            return DBInterface.GetStock();
         }
 
         /// <summary>Recherche un matériel par code, type ou marque.</summary>
@@ -87,18 +82,16 @@ namespace LyonPalme.Models
         {
             if (string.IsNullOrWhiteSpace(recherche))
                 return GetStock();
-            return _db.RechercherMateriel(recherche);
+            return DBInterface.RechercherMateriel(recherche);
         }
 
         /// <summary>Retourne les détails d'un matériel.</summary>
         public MaterielDTO GetDetailsMateriel(int idMateriel)
         {
-            return _db.GetDetailsMateriel(idMateriel);
+            return DBInterface.GetDetailsMateriel(idMateriel);
         }
 
-        /// <summary>
-        /// Ajoute un nouveau matériel via le Model Materiel.
-        /// </summary>
+        /// <summary>Ajoute un nouveau matériel via le Model Materiel.</summary>
         public void AjouterMateriel(Materiel materiel)
         {
             if (materiel == null)
@@ -107,25 +100,20 @@ namespace LyonPalme.Models
                 throw new ArgumentException("Le code du matériel est obligatoire.");
             if (string.IsNullOrWhiteSpace(materiel.TypeMateriel))
                 throw new ArgumentException("Le type du matériel est obligatoire.");
-
             materiel.Ajouter();
         }
 
         /// <summary>Modifie un matériel existant.</summary>
         public void ModifierMateriel(Materiel materiel)
         {
-            if (materiel == null)
-                throw new ArgumentNullException("materiel");
-
+            if (materiel == null) throw new ArgumentNullException("materiel");
             materiel.Modifier();
         }
 
         /// <summary>Supprime un matériel disponible.</summary>
         public void SupprimerMateriel(Materiel materiel)
         {
-            if (materiel == null)
-                throw new ArgumentNullException("materiel");
-
+            if (materiel == null) throw new ArgumentNullException("materiel");
             materiel.Supprimer();
         }
 
@@ -134,7 +122,7 @@ namespace LyonPalme.Models
         /// <summary>Retourne tous les prêts en cours.</summary>
         public List<PretEnCoursDTO> GetPretsEnCours()
         {
-            return _db.GetPretsEnCours();
+            return DBInterface.GetPretsEnCours();
         }
 
         /// <summary>
@@ -143,15 +131,10 @@ namespace LyonPalme.Models
         /// </summary>
         public void EnregistrerPret(Pret pret)
         {
-            if (pret == null)
-                throw new ArgumentNullException("pret");
-            if (pret.IdMateriel <= 0)
-                throw new ArgumentException("Matériel non sélectionné.");
-            if (pret.IdAdherent <= 0)
-                throw new ArgumentException("Adhérent non sélectionné.");
-            if (pret.DateDebut == DateTime.MinValue)
-                throw new ArgumentException("Date de début invalide.");
-
+            if (pret == null) throw new ArgumentNullException("pret");
+            if (pret.IdMateriel <= 0) throw new ArgumentException("Matériel non sélectionné.");
+            if (pret.IdAdherent <= 0) throw new ArgumentException("Adhérent non sélectionné.");
+            if (pret.DateDebut == DateTime.MinValue) throw new ArgumentException("Date de début invalide.");
             pret.Enregistrer();
         }
 
@@ -163,13 +146,9 @@ namespace LyonPalme.Models
         /// </summary>
         public void EnregistrerRetour(Retour retour)
         {
-            if (retour == null)
-                throw new ArgumentNullException("retour");
-            if (retour.IdPret <= 0)
-                throw new ArgumentException("Prêt non sélectionné.");
-            if (string.IsNullOrEmpty(retour.Etat))
-                throw new ArgumentException("L'état du matériel est obligatoire.");
-
+            if (retour == null) throw new ArgumentNullException("retour");
+            if (retour.IdPret <= 0) throw new ArgumentException("Prêt non sélectionné.");
+            if (string.IsNullOrEmpty(retour.Etat)) throw new ArgumentException("L'état du matériel est obligatoire.");
             retour.Enregistrer();
         }
 
@@ -178,19 +157,15 @@ namespace LyonPalme.Models
         /// <summary>Retourne la liste de tous les adhérents.</summary>
         public List<AdherentDTO> GetAdherents()
         {
-            return _db.GetAdherents();
+            return DBInterface.GetAdherents();
         }
 
         /// <summary>Ajoute un adhérent.</summary>
         public void AjouterAdherent(Adherent adherent)
         {
-            if (adherent == null)
-                throw new ArgumentNullException("adherent");
-            if (string.IsNullOrWhiteSpace(adherent.Nom))
-                throw new ArgumentException("Le nom est obligatoire.");
-            if (string.IsNullOrWhiteSpace(adherent.Prenom))
-                throw new ArgumentException("Le prénom est obligatoire.");
-
+            if (adherent == null) throw new ArgumentNullException("adherent");
+            if (string.IsNullOrWhiteSpace(adherent.Nom)) throw new ArgumentException("Le nom est obligatoire.");
+            if (string.IsNullOrWhiteSpace(adherent.Prenom)) throw new ArgumentException("Le prénom est obligatoire.");
             adherent.Ajouter();
         }
     }
