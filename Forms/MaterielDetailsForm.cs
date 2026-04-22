@@ -36,6 +36,7 @@ namespace LyonPalme.Forms
                 ? Color.ForestGreen : Color.Crimson;
 
             btnSupprimer.Enabled = _dto.Disponibilite == "Disponible";
+            btnModifier.Enabled = _dto.Disponibilite == "Disponible";
 
             if (!string.IsNullOrEmpty(_dto.Materiaux))
             { lblMateriauxLib.Visible = true; lblMateriauxValeur.Visible = true; lblMateriauxValeur.Text = _dto.Materiaux; }
