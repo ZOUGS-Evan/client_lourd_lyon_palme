@@ -372,8 +372,8 @@
             this.colRetCode.Name = "colRetCode"; this.colRetCode.HeaderText = "Code";
             this.colRetMarque.Name = "colRetMarque"; this.colRetMarque.HeaderText = "Marque";
             this.colRetDate.Name = "colRetDate"; this.colRetDate.HeaderText = "Début";
-            this.colRetJours.Name = "colRetJours"; this.colRetJours.HeaderText = "Jours";
-            this.colRetType.Name = "colRetType"; this.colRetType.HeaderText = "Type retard";
+            this.colRetJours.Name = "colRetJours"; this.colRetJours.HeaderText = "Date de fin";
+            this.colRetType.Name = "colRetType"; this.colRetType.HeaderText = "Durée retard";
 
             // ── GestionForm ───────────────────────────────────────────
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
