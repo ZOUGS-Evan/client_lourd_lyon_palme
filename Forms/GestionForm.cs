@@ -11,19 +11,17 @@ namespace LyonPalme.Forms
     public partial class GestionForm : Form
     {
         private static readonly Color COULEUR_PRIMAIRE = Color.FromArgb(15, 32, 65);
-
         private static readonly Color COULEUR_DISPO = Color.FromArgb(198, 239, 206);
         private static readonly Color COULEUR_PRETE = Color.FromArgb(255, 199, 206);
         private static readonly Color COULEUR_HORS_SERVICE = Color.FromArgb(235, 235, 235);
-
-        private static readonly Color COULEUR_SELECTION_GRIS_FONCE = Color.FromArgb(55, 60, 70);
+        private static readonly Color COULEUR_SELECTION_FONCE = Color.FromArgb(55, 60, 70);
         private static readonly Color COULEUR_SELECTION_TEXTE = Color.White;
 
         private readonly Gestion _gestion = Gestion.getInstance();
 
         private const string RECHERCHE_PLACEHOLDER = "Rechercher par code, type, marque...";
-        private const string RECHERCHE_PRETS_PLACEHOLDER = "Rechercher par adhérent, code, marque...";
-        private const string RECHERCHE_RETARDS_PLACEHOLDER = "Rechercher par adhérent, code, marque, type...";
+        private const string RECHERCHE_PRETS_PLACEHOLDER = "Rechercher par adherent, code, marque...";
+        private const string RECHERCHE_RETARDS_PLACEHOLDER = "Rechercher par adherent, code, marque, type...";
 
         public GestionForm()
         {
@@ -36,7 +34,6 @@ namespace LyonPalme.Forms
                                 " " + _gestion.UtilisateurConnecte.Nom + "  |  " +
                                 DateTime.Now.ToString("dddd dd MMMM yyyy");
 
-            // Flèches Windows + recoloration (évite le doublon)
             dgvStock.CellPainting += dgv_CellPainting_HeaderTriBleu;
             dgvPrets.CellPainting += dgv_CellPainting_HeaderTriBleu;
             dgvRetards.CellPainting += dgv_CellPainting_HeaderTriBleu;
@@ -65,21 +62,18 @@ namespace LyonPalme.Forms
         private static void AppliquerStyleSelection(DataGridView dgv)
         {
             if (dgv == null) return;
-            dgv.DefaultCellStyle.SelectionBackColor = COULEUR_SELECTION_GRIS_FONCE;
+            dgv.DefaultCellStyle.SelectionBackColor = COULEUR_SELECTION_FONCE;
             dgv.DefaultCellStyle.SelectionForeColor = COULEUR_SELECTION_TEXTE;
         }
 
         private void InitialiserGrille(DataGridView dgv)
         {
             if (dgv == null) return;
-
             dgv.Leave += delegate { dgv.ClearSelection(); };
-
-            dgv.MouseDown += (s, e) =>
+            dgv.MouseDown += (s, ev) =>
             {
-                DataGridView.HitTestInfo hit = dgv.HitTest(e.X, e.Y);
-                bool clickHorsLigne = hit.Type != DataGridViewHitTestType.Cell;
-                if (clickHorsLigne) dgv.ClearSelection();
+                DataGridView.HitTestInfo hit = dgv.HitTest(ev.X, ev.Y);
+                if (hit.Type != DataGridViewHitTestType.Cell) dgv.ClearSelection();
             };
         }
 
@@ -94,60 +88,40 @@ namespace LyonPalme.Forms
         {
             DataGridView dgv = sender as DataGridView;
             if (dgv == null) return;
-
-            // Assure la présence du glyph Windows (direction)
             if (dgv.SortedColumn != null)
                 dgv.SortedColumn.HeaderCell.SortGlyphDirection = dgv.SortOrder;
-
-            dgv.Invalidate(); // redessine les en-têtes -> flèche bleue
+            dgv.Invalidate();
         }
 
-        /// <summary>
-        /// Recolore le glyph de tri en bleu primaire (sans créer de doublon).
-        /// On laisse Windows gérer le tri et la direction, on repeint juste par-dessus.
-        /// </summary>
         private void dgv_CellPainting_HeaderTriBleu(object sender, DataGridViewCellPaintingEventArgs e)
         {
             DataGridView dgv = sender as DataGridView;
             if (dgv == null) return;
-
-            // uniquement en-têtes de colonnes
-            if (e.RowIndex != -1 || e.ColumnIndex < 0)
-                return;
+            if (e.RowIndex != -1 || e.ColumnIndex < 0) return;
 
             e.Paint(e.CellBounds, DataGridViewPaintParts.All);
 
             if (dgv.SortedColumn == null || dgv.SortedColumn.Index != e.ColumnIndex)
-            {
-                e.Handled = true;
-                return;
-            }
+            { e.Handled = true; return; }
 
             SortOrder order = dgv.SortOrder;
-            if (order == SortOrder.None)
-            {
-                e.Handled = true;
-                return;
-            }
+            if (order == SortOrder.None) { e.Handled = true; return; }
 
             Rectangle r = e.CellBounds;
             int size = 10;
             int paddingRight = 10;
-
             int cx = r.Right - paddingRight - (size / 2);
             int cy = r.Top + (r.Height / 2);
 
             Point p1, p2, p3;
             if (order == SortOrder.Ascending)
             {
-                // ▲
                 p1 = new Point(cx - size / 2, cy + size / 3);
                 p2 = new Point(cx + size / 2, cy + size / 3);
                 p3 = new Point(cx, cy - size / 2);
             }
             else
             {
-                // ▼
                 p1 = new Point(cx - size / 2, cy - size / 3);
                 p2 = new Point(cx + size / 2, cy - size / 3);
                 p3 = new Point(cx, cy + size / 2);
@@ -159,9 +133,10 @@ namespace LyonPalme.Forms
                 e.Graphics.FillPolygon(b, new Point[] { p1, p2, p3 });
                 e.Graphics.SmoothingMode = SmoothingMode.Default;
             }
-
             e.Handled = true;
         }
+
+        // ── Chargement données ───────────────────────────────────────
 
         private void ChargerStock()
         {
@@ -169,7 +144,7 @@ namespace LyonPalme.Forms
             {
                 List<MaterielDTO> stock = _gestion.GetStock();
                 RemplirDgvStock(stock);
-                lblStockCount.Text = stock.Count + " matériel(s)";
+                lblStockCount.Text = stock.Count + " materiel(s)";
                 dgvStock.ClearSelection();
             }
             catch (Exception ex)
@@ -182,11 +157,8 @@ namespace LyonPalme.Forms
         private void RemplirDgvStock(List<MaterielDTO> materiels)
         {
             dgvStock.Rows.Clear();
-
-            for (int i = 0; i < materiels.Count; i++)
+            foreach (MaterielDTO m in materiels)
             {
-                MaterielDTO m = materiels[i];
-
                 int idx = dgvStock.Rows.Add(
                     m.Id,
                     m.Code,
@@ -197,33 +169,31 @@ namespace LyonPalme.Forms
                     m.Disponibilite
                 );
 
-                if (m.Disponibilite == "Prêté")
+                // "Prete" sans accent — cohérent avec vue_disponibilite
+                if (m.Disponibilite == "Prete")
                     dgvStock.Rows[idx].DefaultCellStyle.BackColor = COULEUR_PRETE;
                 else if (m.Etat == "Hors service")
                     dgvStock.Rows[idx].DefaultCellStyle.BackColor = COULEUR_HORS_SERVICE;
                 else
                     dgvStock.Rows[idx].DefaultCellStyle.BackColor = COULEUR_DISPO;
             }
-
             dgvStock.ClearSelection();
         }
 
         private void RafraichirStockSelonRecherche()
         {
             string terme = txtRecherche.Text == null ? string.Empty : txtRecherche.Text.Trim();
-            bool placeholderActif = (txtRecherche.ForeColor == Color.Gray) || (terme == RECHERCHE_PLACEHOLDER);
+            bool placeholderActif = (txtRecherche.ForeColor == Color.Gray) ||
+                                    (terme == RECHERCHE_PLACEHOLDER);
 
             if (placeholderActif || string.IsNullOrEmpty(terme))
-            {
-                ChargerStock();
-                return;
-            }
+            { ChargerStock(); return; }
 
             try
             {
                 List<MaterielDTO> resultats = _gestion.RechercherMateriel(terme);
                 RemplirDgvStock(resultats);
-                lblStockCount.Text = resultats.Count + " matériel(s)";
+                lblStockCount.Text = resultats.Count + " materiel(s)";
             }
             catch { }
         }
@@ -251,12 +221,12 @@ namespace LyonPalme.Forms
                         dgvPrets.Rows[idx].DefaultCellStyle.BackColor = COULEUR_PRETE;
                 }
 
-                lblPretsCount.Text = prets.Count + " prêt(s) en cours";
+                lblPretsCount.Text = prets.Count + " pret(s) en cours";
                 dgvPrets.ClearSelection();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Erreur chargement prêts : " + ex.Message,
+                MessageBox.Show("Erreur chargement prets : " + ex.Message,
                     "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -275,10 +245,9 @@ namespace LyonPalme.Forms
                         r.Code,
                         r.Marque,
                         r.DateDebut.ToString("dd/MM/yyyy"),
-                        r.JoursDepuisDebut + " jour(s)",
-                        r.TypeRetard
+                        r.DateFin.HasValue ? r.DateFin.Value.ToString("dd/MM/yyyy") : "Aucune",
+                        r.JoursRetard + " jour(s)"
                     );
-
                     dgvRetards.Rows[idx].DefaultCellStyle.BackColor = COULEUR_PRETE;
                 }
 
@@ -314,6 +283,8 @@ namespace LyonPalme.Forms
             catch { }
         }
 
+        // ── Événements UI ────────────────────────────────────────────
+
         private void txtRecherche_TextChanged(object sender, EventArgs e)
         {
             RafraichirStockSelonRecherche();
@@ -323,7 +294,6 @@ namespace LyonPalme.Forms
         {
             if (tabControl.SelectedTab == tabStock)
                 RafraichirStockSelonRecherche();
-
             ClearSelectionAll();
         }
 
@@ -331,19 +301,17 @@ namespace LyonPalme.Forms
         {
             if (txt == null) return true;
             string t = txt.Text == null ? string.Empty : txt.Text.Trim();
-            return (txt.ForeColor == Color.Gray) || string.Equals(t, placeholder, StringComparison.OrdinalIgnoreCase);
+            return (txt.ForeColor == Color.Gray) ||
+                   string.Equals(t, placeholder, StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool LigneContient(DataGridViewRow row, string terme)
         {
             if (row == null || row.IsNewRow) return false;
-
-            for (int i = 0; i < row.Cells.Count; i++)
+            foreach (DataGridViewCell cell in row.Cells)
             {
-                object v = row.Cells[i].Value;
-                if (v == null) continue;
-
-                if (v.ToString().IndexOf(terme, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (cell.Value == null) continue;
+                if (cell.Value.ToString().IndexOf(terme, StringComparison.OrdinalIgnoreCase) >= 0)
                     return true;
             }
             return false;
@@ -352,22 +320,17 @@ namespace LyonPalme.Forms
         private void FiltrerDgv(DataGridView dgv, string terme)
         {
             if (dgv == null) return;
-
             foreach (DataGridViewRow row in dgv.Rows)
             {
                 if (row.IsNewRow) continue;
-                row.Visible = string.IsNullOrEmpty(terme) ? true : LigneContient(row, terme);
+                row.Visible = string.IsNullOrEmpty(terme) || LigneContient(row, terme);
             }
         }
 
         private void txtRecherchePrets_TextChanged(object sender, EventArgs e)
         {
             if (PlaceholderActif(txtRecherchePrets, RECHERCHE_PRETS_PLACEHOLDER))
-            {
-                FiltrerDgv(dgvPrets, string.Empty);
-                return;
-            }
-
+            { FiltrerDgv(dgvPrets, string.Empty); return; }
             FiltrerDgv(dgvPrets, txtRecherchePrets.Text.Trim());
             dgvPrets.ClearSelection();
         }
@@ -375,19 +338,14 @@ namespace LyonPalme.Forms
         private void txtRechercheRetards_TextChanged(object sender, EventArgs e)
         {
             if (PlaceholderActif(txtRechercheRetards, RECHERCHE_RETARDS_PLACEHOLDER))
-            {
-                FiltrerDgv(dgvRetards, string.Empty);
-                return;
-            }
-
+            { FiltrerDgv(dgvRetards, string.Empty); return; }
             FiltrerDgv(dgvRetards, txtRechercheRetards.Text.Trim());
             dgvRetards.ClearSelection();
         }
 
         private void btnAjouterMateriel_Click(object sender, EventArgs e)
         {
-            MaterielAddForm form = new MaterielAddForm();
-            form.ShowDialog(this);
+            new MaterielAddForm().ShowDialog(this);
             RafraichirStockSelonRecherche();
             MettreAJourCompteurs();
             ClearSelectionAll();
@@ -395,8 +353,7 @@ namespace LyonPalme.Forms
 
         private void btnNouveauPret_Click(object sender, EventArgs e)
         {
-            PretForm form = new PretForm();
-            form.ShowDialog(this);
+            new PretForm().ShowDialog(this);
             RafraichirStockSelonRecherche();
             ChargerPretsEnCours();
             MettreAJourCompteurs();
@@ -405,8 +362,7 @@ namespace LyonPalme.Forms
 
         private void btnNouveauRetour_Click(object sender, EventArgs e)
         {
-            RetourForm form = new RetourForm();
-            form.ShowDialog(this);
+            new RetourForm().ShowDialog(this);
             RafraichirStockSelonRecherche();
             ChargerPretsEnCours();
             MettreAJourCompteurs();
@@ -415,8 +371,7 @@ namespace LyonPalme.Forms
 
         private void btnInventaire_Click(object sender, EventArgs e)
         {
-            InventaireForm form = new InventaireForm();
-            form.ShowDialog(this);
+            new InventaireForm().ShowDialog(this);
             ClearSelectionAll();
         }
 
@@ -430,7 +385,6 @@ namespace LyonPalme.Forms
             ChargerPretsEnCours();
             ChargerRetards();
             MettreAJourCompteurs();
-
             ClearSelectionAll();
         }
 
@@ -442,8 +396,7 @@ namespace LyonPalme.Forms
             MaterielDTO dto = _gestion.GetDetailsMateriel(idMateriel);
             if (dto == null) return;
 
-            MaterielDetailsForm form = new MaterielDetailsForm(dto);
-            form.ShowDialog(this);
+            new MaterielDetailsForm(dto).ShowDialog(this);
 
             RafraichirStockSelonRecherche();
             ChargerPretsEnCours();
@@ -453,13 +406,8 @@ namespace LyonPalme.Forms
 
         private void btnDeconnecter_Click(object sender, EventArgs e)
         {
-            DialogResult confirm = MessageBox.Show(
-                "Voulez-vous vous déconnecter ?",
-                "Déconnexion",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (confirm == DialogResult.Yes)
+            if (MessageBox.Show("Voulez-vous vous deconnecter ?", "Deconnexion",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 _gestion.Deconnecter();
                 Close();
@@ -474,25 +422,20 @@ namespace LyonPalme.Forms
         private void HookClearSelectionOnClick(Control root)
         {
             if (root == null) return;
-
-            root.MouseDown += (s, e) =>
+            root.MouseDown += (s, ev) =>
             {
                 Control c = s as Control;
                 if (c == null) { ClearSelectionAll(); return; }
-
                 Control parent = c;
                 while (parent != null)
                 {
-                    if (parent is DataGridView)
-                        return;
+                    if (parent is DataGridView) return;
                     parent = parent.Parent;
                 }
-
                 ClearSelectionAll();
             };
-
-            for (int i = 0; i < root.Controls.Count; i++)
-                HookClearSelectionOnClick(root.Controls[i]);
+            foreach (Control child in root.Controls)
+                HookClearSelectionOnClick(child);
         }
     }
 }

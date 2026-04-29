@@ -71,7 +71,7 @@ namespace LyonPalme.DataAccess
         public DateTime? DateFin { get; set; }
         public DateTime? DateRetour { get; set; }
         public int JoursDepuisDebut { get; set; }
-        public string TypeRetard { get; set; }
+        public int JoursRetard { get; set; }
     }
 
     public class InventaireDTO
@@ -445,8 +445,11 @@ namespace LyonPalme.DataAccess
         /// Enregistre un prêt.
         /// Appeler GetNextId("Pret") avant.
         /// Disponibilité vérifiée par le trigger empecher_pret_en_double.
+        /// dateFin est optionnelle : si renseignée, elle définit la date de retour prévue
+        /// et permet de distinguer les vrais retards (dépassement) des prêts sans échéance.
         /// </summary>
-        public static int EnregistrerPret(int id, int idMateriel, int idAdherent, DateTime dateDebut)
+        public static int EnregistrerPret(int id, int idMateriel, int idAdherent,
+                                          DateTime dateDebut, DateTime? dateFin = null)
         {
             try
             {
@@ -457,6 +460,7 @@ namespace LyonPalme.DataAccess
                     cmd.Parameters.AddWithValue("@id_materiel", idMateriel);
                     cmd.Parameters.AddWithValue("@id_adherent", idAdherent);
                     cmd.Parameters.AddWithValue("@dateDebut", dateDebut.Date);
+                    cmd.Parameters.Add(Nullable("@dateFin", dateFin.HasValue ? (object)dateFin.Value.Date : null, SqlDbType.Date));
 
                     using (SqlDataReader r = cmd.ExecuteReader())
                     {
@@ -761,7 +765,7 @@ namespace LyonPalme.DataAccess
                 DateFin = NullDate(r, "dateFin"),
                 DateRetour = NullDate(r, "dateRetour"),
                 JoursDepuisDebut = r.GetInt32(r.GetOrdinal("jours_depuis_debut")),
-                TypeRetard = r.GetString(r.GetOrdinal("type_retard"))
+                JoursRetard = r.GetInt32(r.GetOrdinal("jours_retard"))
             };
         }
     }

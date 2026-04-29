@@ -17,7 +17,7 @@ namespace LyonPalme.Models
         public int IdMateriel { get; set; }
         public int IdAdherent { get; set; }
         public DateTime DateDebut { get; set; }
-        public DateTime? DateFin { get; private set; }
+        public DateTime? DateFin { get; set; }   // Date de retour prévue (optionnelle)
 
         // Données dénormalisées pour affichage (issues de la vue)
         public string NomAdherent { get; set; }
@@ -26,11 +26,23 @@ namespace LyonPalme.Models
         public string MarqueMateriel { get; set; }
         public int JoursEnPret { get; set; }
 
-        /// <summary>Indique si le prêt est toujours en cours.</summary>
-        public bool EstEnCours => DateFin == null;
+        /// <summary>Indique si le prêt est toujours en cours (pas encore retourné).</summary>
+        public bool EstEnCours => DateFin == null || DateFin > DateTime.Today;
 
-        /// <summary>Indique si le prêt dépasse 30 jours sans retour.</summary>
-        public bool EstEnRetard => EstEnCours && (DateTime.Today - DateDebut).TotalDays > 30;
+        /// <summary>
+        /// Indique si le prêt est en retard :
+        /// - Si une date de fin prévue est définie : dépassement de cette date.
+        /// - Sinon : plus de 30 jours sans retour (règle par défaut).
+        /// </summary>
+        public bool EstEnRetard
+        {
+            get
+            {
+                if (DateFin.HasValue)
+                    return DateTime.Today > DateFin.Value;
+                return (DateTime.Today - DateDebut).TotalDays > 30;
+            }
+        }
 
         // ── Constructeurs ────────────────────────────────────────────
 
@@ -63,7 +75,7 @@ namespace LyonPalme.Models
             if (IdAdherent <= 0) throw new ArgumentException("IdAdherent non renseigné.");
 
             int nextId = DBInterface.GetNextId("Pret");
-            Id = DBInterface.EnregistrerPret(nextId, IdMateriel, IdAdherent, DateDebut);
+            Id = DBInterface.EnregistrerPret(nextId, IdMateriel, IdAdherent, DateDebut, DateFin);
         }
 
         public override string ToString()

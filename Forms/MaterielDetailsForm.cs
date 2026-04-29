@@ -32,11 +32,11 @@ namespace LyonPalme.Forms
             lblEtatValeur.Text = _dto.Etat;
             lblDispoValeur.Text = _dto.Disponibilite;
 
-            lblDispoValeur.ForeColor = _dto.Disponibilite == "Disponible"
-                ? Color.ForestGreen : Color.Crimson;
+            bool disponible = _dto.Disponibilite == "Disponible";
+            btnSupprimer.Enabled = disponible;
+            btnModifier.Enabled = disponible;
 
-            btnSupprimer.Enabled = _dto.Disponibilite == "Disponible";
-            btnModifier.Enabled = _dto.Disponibilite == "Disponible";
+            lblDispoValeur.ForeColor = disponible ? Color.ForestGreen : Color.Crimson;
 
             if (!string.IsNullOrEmpty(_dto.Materiaux))
             { lblMateriauxLib.Visible = true; lblMateriauxValeur.Visible = true; lblMateriauxValeur.Text = _dto.Materiaux; }
