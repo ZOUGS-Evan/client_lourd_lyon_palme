@@ -81,6 +81,98 @@ Toutes les interactions entre les Forms et la base de données passent par `Gest
 
 ---
 
+## Arborescence
+
+```mermaid
+flowchart LR
+    subgraph PRES ["PRÉSENTATION (Forms)"]
+        pres["- ConnexionForm\n- GestionForm\n- MaterielAddForm\n- MaterielEditForm\n- MaterielDetailsForm\n- PretForm\n- RetourForm\n- InventaireForm\n- AlertForm"]
+    end
+
+    subgraph MET ["MÉTIER (Models)"]
+        met["- Materiel.cs\n- Gestion.cs\n- Inventaire.cs\n- Pret.cs\n- Retour.cs\n- Historique.cs\n- Adherent.cs"]
+    end
+
+    subgraph PERS ["PERSISTANCE (DataAccess)"]
+        pers["- Connexion.cs\n- DBInterface.cs"]
+    end
+
+    DB[(SQL Server)]
+
+    PRES <--> MET
+    MET <--> PERS
+    PERS <--> DB
+```
+
+---
+
+## Diagramme de classes
+
+```mermaid
+classDiagram
+    class Gestion {
+        <<singleton>>
+        +UtilisateurDTO UtilisateurConnecte
+        +bool EstConnecte
+        +Connecter(login, mdp) bool
+        +AjouterMateriel(Materiel)
+        +EnregistrerPret(Pret)
+        +EnregistrerRetour(Retour)
+    }
+
+    class Materiel {
+        +int Id
+        +string Code
+        +string TypeMateriel
+        +string Disponibilite
+        +Ajouter()
+        +Modifier()
+        +Supprimer()
+    }
+
+    class Pret {
+        +int IdMateriel
+        +int IdAdherent
+        +DateTime DateDebut
+        +bool EstEnRetard
+        +Enregistrer()
+    }
+
+    class Retour {
+        +int IdPret
+        +string Etat
+        +DateTime DateRetour
+        +Enregistrer()
+    }
+
+    class Adherent {
+        +int Id
+        +string Nom
+        +string Prenom
+        +string Role
+        +Ajouter()
+    }
+
+    class DBInterface {
+        <<static>>
+        +GetStock()$ List~MaterielDTO~
+        +EnregistrerPret(...)$ int
+        +EnregistrerRetour(...)$ int
+        +GetAdherents()$ List~AdherentDTO~
+    }
+
+    Gestion ..> Materiel
+    Gestion ..> Pret
+    Gestion ..> Retour
+    Gestion ..> Adherent
+    Materiel ..> DBInterface
+    Pret ..> DBInterface
+    Retour ..> DBInterface
+    Adherent ..> DBInterface
+```
+
+---
+
 ## Diagramme de cas d'utilisation
 
 ```mermaid
