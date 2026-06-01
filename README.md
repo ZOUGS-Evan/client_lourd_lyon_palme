@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # LyonPalme — Gestion du matériel
 
 Application desktop Windows Forms (.NET Framework 4.8) pour la gestion des équipements du club de plongée Lyon Palme. Elle permet au responsable matériel de gérer le stock, les prêts, les retours et d'identifier les retards.
@@ -298,3 +299,6 @@ sequenceDiagram
     GF->>DB: GetStock() + GetPretsEnCours() + GetRetards()
     GF-->>R: Tableaux rafraîchis
 ```
+=======
+# client_lourd_lyon_palme
+>>>>>>> 3120dfe9d54885c4c81cd3d24713849e56b9a948
