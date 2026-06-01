@@ -81,6 +81,190 @@ Toutes les interactions entre les Forms et la base de données passent par `Gest
 
 ---
 
+## Diagramme de classes
+
+```mermaid
+classDiagram
+    %% ── Couche Modèle ────────────────────────────────────────────
+    class Gestion {
+        <<singleton>>
+        -Gestion _instance$
+        +UtilisateurDTO UtilisateurConnecte
+        +bool EstConnecte
+        +Inventaire Inventaire
+        +Historique Historique
+        +getInstance()$ Gestion
+        +Connecter(login, mdp) bool
+        +Deconnecter()
+        +AjouterMateriel(Materiel)
+        +ModifierMateriel(Materiel)
+        +SupprimerMateriel(Materiel)
+        +EnregistrerPret(Pret)
+        +EnregistrerRetour(Retour)
+        +AjouterAdherent(Adherent)
+    }
+
+    class Materiel {
+        +int Id
+        +string Code
+        +string Marque
+        +string Etat
+        +string TypeMateriel
+        +string TailleOuPointure
+        +string Materiaux
+        +string TenuSaison
+        +string Disponibilite
+        +int NbPretsEnCours
+        +Ajouter()
+        +Modifier()
+        +Supprimer()
+        +EstDisponible() bool
+        +EstHorsService() bool
+    }
+
+    class Pret {
+        +int Id
+        +int IdMateriel
+        +int IdAdherent
+        +DateTime DateDebut
+        +DateTime DateFin
+        +bool EstEnCours
+        +bool EstEnRetard
+        +Enregistrer()
+    }
+
+    class Retour {
+        +int Id
+        +int IdPret
+        +string Etat
+        +DateTime DateRetour
+        +string[] EtatsPossibles$
+        +Enregistrer()
+    }
+
+    class Adherent {
+        +int Id
+        +string Nom
+        +string Prenom
+        +string Role
+        +DateTime DateDeNaissance
+        +string NomComplet
+        +Ajouter()
+        +GetHistoriquePrets() List~HistoriqueDTO~
+    }
+
+    class Inventaire {
+        +GetInventaireComplet() List~InventaireDTO~
+    }
+
+    class Historique {
+        +GetHistoriqueMateriel(id) List~HistoriqueDTO~
+        +GetRetards() List~RetardDTO~
+    }
+
+    %% ── Couche DataAccess ────────────────────────────────────────
+    class DBInterface {
+        <<static>>
+        +Authentifier(login, mdp)$ UtilisateurDTO
+        +GetNextId(nomTable)$ int
+        +GetStock()$ List~MaterielDTO~
+        +AjouterMateriel(...)$ int
+        +ModifierMateriel(...)$
+        +SupprimerMateriel(id)$
+        +EnregistrerPret(...)$ int
+        +GetPretsEnCours()$ List~PretEnCoursDTO~
+        +EnregistrerRetour(...)$ int
+        +GetHistoriqueMateriel(id)$ List~HistoriqueDTO~
+        +GetRetards()$ List~RetardDTO~
+        +GetAdherents()$ List~AdherentDTO~
+        +AjouterAdherent(...)$ int
+        +GetInventaire()$ List~InventaireDTO~
+    }
+
+    class Connection {
+        <<singleton>>
+        -Connection instance$
+        -SqlConnection sqlConnection
+        +getInstance()$ Connection
+        +GetConnection() SqlConnection
+    }
+
+    %% ── DTOs ─────────────────────────────────────────────────────
+    class MaterielDTO {
+        +int Id
+        +string Code
+        +string TypeMateriel
+        +string Disponibilite
+    }
+
+    class PretEnCoursDTO {
+        +int IdPret
+        +string Nom
+        +DateTime DateDebut
+        +int JoursEnPret
+    }
+
+    class AdherentDTO {
+        +int Id
+        +string Nom
+        +string Prenom
+        +string Role
+    }
+
+    class UtilisateurDTO {
+        +int Id
+        +string Login
+        +string Nom
+        +string Prenom
+    }
+
+    class HistoriqueDTO {
+        +int IdPret
+        +DateTime DateDebut
+        +string EtatRetour
+    }
+
+    class RetardDTO {
+        +int IdPret
+        +string Code
+        +int JoursRetard
+    }
+
+    class InventaireDTO {
+        +string TypeMateriel
+        +int Total
+        +int Disponibles
+        +int Pretes
+    }
+
+    %% ── Relations ────────────────────────────────────────────────
+    Gestion "1" *-- "1" Inventaire : contient
+    Gestion "1" *-- "1" Historique : contient
+    Gestion ..> Materiel : crée / valide
+    Gestion ..> Pret : crée / valide
+    Gestion ..> Retour : crée / valide
+    Gestion ..> Adherent : crée / valide
+    Gestion ..> DBInterface : délègue
+
+    Materiel ..> DBInterface : appelle
+    Pret ..> DBInterface : appelle
+    Retour ..> DBInterface : appelle
+    Adherent ..> DBInterface : appelle
+    Inventaire ..> DBInterface : appelle
+    Historique ..> DBInterface : appelle
+
+    DBInterface ..> Connection : utilise
+    DBInterface ..> MaterielDTO : produit
+    DBInterface ..> PretEnCoursDTO : produit
+    DBInterface ..> AdherentDTO : produit
+    DBInterface ..> UtilisateurDTO : produit
+    DBInterface ..> HistoriqueDTO : produit
+    DBInterface ..> RetardDTO : produit
+    DBInterface ..> InventaireDTO : produit
+```
+
+---
+
 ## Diagrammes de séquence
 
 ### 1 — Authentification
