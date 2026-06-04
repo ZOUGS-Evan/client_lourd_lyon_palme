@@ -101,6 +101,7 @@
             this.tlpKpi.SuspendLayout();
             this.pnlGauche.SuspendLayout();
             this.flpActions.SuspendLayout();
+            this.SuspendLayout();
             this.pnlContenu.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabStock.SuspendLayout();
@@ -198,6 +199,7 @@
             this.flpActions.Margin = new System.Windows.Forms.Padding(0);
             this.flpActions.Padding = new System.Windows.Forms.Padding(0);
             this.flpActions.Controls.Add(this.btnAjouterMateriel);
+            // Bouton gestion marques (RESTORE : supprimé)
             this.flpActions.Controls.Add(this.btnNouveauPret);
             this.flpActions.Controls.Add(this.btnNouveauRetour);
             this.flpActions.Controls.Add(this.btnInventaire);

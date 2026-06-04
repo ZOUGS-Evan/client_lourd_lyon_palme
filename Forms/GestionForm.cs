@@ -28,6 +28,8 @@ namespace LyonPalme.Forms
             InitializeComponent();
         }
 
+        // NOTE: btnMarques removed; no action here.
+
         private void GestionForm_Load(object sender, EventArgs e)
         {
             lblBienvenue.Text = "Bonjour, " + _gestion.UtilisateurConnecte.Prenom +

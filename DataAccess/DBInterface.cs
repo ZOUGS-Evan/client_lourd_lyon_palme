@@ -23,7 +23,8 @@ namespace LyonPalme.DataAccess
     {
         public int Id { get; set; }
         public string Code { get; set; }
-        public string Marque { get; set; }
+        // Maintenant stocke l'ID de la marque (clé étrangère)
+        public int Marque { get; set; }
         public string Etat { get; set; }
         public string TypeMateriel { get; set; }
         public string TailleOuPointure { get; set; }
@@ -100,6 +101,12 @@ namespace LyonPalme.DataAccess
         public string Prenom { get; set; }
     }
 
+    public class MarqueDTO
+    {
+        public int Id { get; set; }
+        public string Libelle { get; set; }
+    }
+
     // ── DBInterface (classe statique) ────────────────────────────────
 
     public static class DBInterface
@@ -174,6 +181,157 @@ namespace LyonPalme.DataAccess
                     Log.WriteLog(message, w);
             }
             catch { /* Ne pas lever d'exception dans le gestionnaire d'erreurs */ }
+        }
+
+        // ── Marques ─────────────────────────────────────────────────
+
+        /// <summary>
+        /// Retourne le libellé d'une marque à partir de son id.
+        /// </summary>
+        public static string GetMarqueLibelle(int id)
+        {
+            try
+            {
+                using (SqlConnection conn = OpenConnection())
+                using (SqlCommand cmd = new SqlCommand("SELECT libelle FROM Marque WHERE id = @id", conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    object o = cmd.ExecuteScalar();
+                    return (o == null || o == DBNull.Value) ? string.Empty : o.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErreur("DBInterface.GetMarqueLibelle : " + ex.Message);
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Recherche l'id d'une marque à partir de son libellé.
+        /// Retourne null si introuvable.
+        /// </summary>
+        public static int? GetMarqueIdByLibelle(string libelle)
+        {
+            try
+            {
+                using (SqlConnection conn = OpenConnection())
+                using (SqlCommand cmd = new SqlCommand("SELECT id FROM Marque WHERE libelle = @libelle", conn))
+                {
+                    cmd.Parameters.AddWithValue("@libelle", libelle ?? string.Empty);
+                    object o = cmd.ExecuteScalar();
+                    return (o == null || o == DBNull.Value) ? (int?)null : Convert.ToInt32(o);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErreur("DBInterface.GetMarqueIdByLibelle : " + ex.Message);
+                return null;
+            }
+        }
+
+        // ── CRUD Marques via procédures stockées ────────────────────
+
+        /// <summary>
+        /// Retourne la liste complète des marques (procédure sp_GetMarquesMateriel).
+        /// </summary>
+        public static List<MarqueDTO> GetMarques()
+        {
+            try
+            {
+                using (SqlConnection conn = OpenConnection())
+                using (SqlCommand cmd = Proc(conn, "sp_GetMarquesMateriel"))
+                {
+                    List<MarqueDTO> list = new List<MarqueDTO>();
+                    using (SqlDataReader r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            list.Add(new MarqueDTO
+                            {
+                                Id = r.GetInt32(r.GetOrdinal("id")),
+                                Libelle = r.GetString(r.GetOrdinal("libelle"))
+                            });
+                        }
+                    }
+                    return list;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErreur("DBInterface.GetMarques : " + ex.Message);
+                return new List<MarqueDTO>();
+            }
+        }
+
+        /// <summary>
+        /// Ajoute une marque via procédure stockée sp_AjouterMarque.
+        /// Retourne l'id créé.
+        /// </summary>
+        public static int AjouterMarque(int id, string libelle)
+        {
+            try
+            {
+                using (SqlConnection conn = OpenConnection())
+                using (SqlCommand cmd = Proc(conn, "sp_AjouterMarque"))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@libelle", libelle);
+                    using (SqlDataReader r = cmd.ExecuteReader())
+                    {
+                        if (!r.Read()) throw new Exception("sp_AjouterMarque n'a retourné aucun résultat.");
+                        return r.GetInt32(r.GetOrdinal("id_cree"));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErreur("DBInterface.AjouterMarque : " + ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Modifie une marque via procédure stockée sp_ModifierMarque.
+        /// </summary>
+        public static void ModifierMarque(int id, string libelle)
+        {
+            try
+            {
+                using (SqlConnection conn = OpenConnection())
+                using (SqlCommand cmd = Proc(conn, "sp_ModifierMarque"))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@libelle", libelle);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErreur("DBInterface.ModifierMarque : " + ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Supprime une marque via procédure stockée sp_SupprimerMarque.
+        /// </summary>
+        public static void SupprimerMarque(int id)
+        {
+            try
+            {
+                using (SqlConnection conn = OpenConnection())
+                using (SqlCommand cmd = Proc(conn, "sp_SupprimerMarque"))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErreur("DBInterface.SupprimerMarque : " + ex.Message);
+                throw;
+            }
         }
 
         // ── Authentification ─────────────────────────────────────────
@@ -315,7 +473,7 @@ namespace LyonPalme.DataAccess
         /// Appeler GetNextId("Materiel") avant.
         /// Pour une Monopalme, materiaux est obligatoire.
         /// </summary>
-        public static int AjouterMateriel(int id, string code, string marque, string etat,
+        public static int AjouterMateriel(int id, string code, int marque, string etat,
                                           string typeMateriel, int? pointure = null,
                                           string materiaux = null, string taille = null,
                                           string tenuSaison = null)
@@ -354,7 +512,7 @@ namespace LyonPalme.DataAccess
         /// Modifie un matériel existant.
         /// Les champs null dans les tables filles ne sont pas écrasés (ISNULL côté SQL).
         /// </summary>
-        public static void ModifierMateriel(int idMateriel, string code, string marque, string etat,
+        public static void ModifierMateriel(int idMateriel, string code, int marque, string etat,
                                             int? pointure = null, string materiaux = null,
                                             string taille = null, string tenuSaison = null)
         {
@@ -705,7 +863,9 @@ namespace LyonPalme.DataAccess
             {
                 Id = r.GetInt32(r.GetOrdinal("id")),
                 Code = r.GetString(r.GetOrdinal("code")),
-                Marque = r.GetString(r.GetOrdinal("marque")),
+                // Depuis la modification SMMS, la colonne 'marque' dans la vue Materiel
+                // est désormais un identifiant (int) référant à la table Marque.
+                Marque = r.GetInt32(r.GetOrdinal("marque")),
                 Etat = r.GetString(r.GetOrdinal("etat")),
                 TypeMateriel = HasCol(r, "type_materiel") ? NullStr(r, "type_materiel") : string.Empty,
                 TailleOuPointure = HasCol(r, "taille_ou_pointure") ? NullStr(r, "taille_ou_pointure") : null,

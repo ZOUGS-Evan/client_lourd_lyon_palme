@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- Programme principal -->
+    <Compile Include="Models\Marque.cs" />
     <Compile Include="Program.cs" />
     <!-- Tools -->
     <Compile Include="Tools\Log.cs" />

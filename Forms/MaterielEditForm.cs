@@ -25,7 +25,8 @@ namespace LyonPalme.Forms
 
             // Pré-remplir les champs communs
             txtCode.Text = _dto.Code;
-            txtMarque.Text = _dto.Marque;
+            // Afficher le libellé de la marque (ici _dto.Marque contient l'id)
+            txtMarque.Text = DBInterface.GetMarqueLibelle(_dto.Marque);
             int etatIdx = cboEtat.Items.IndexOf(_dto.Etat);
             cboEtat.SelectedIndex = etatIdx >= 0 ? etatIdx : 0;
             lblTypeValeur.Text = _dto.TypeMateriel;
@@ -84,10 +85,15 @@ namespace LyonPalme.Forms
                         saison = cboSaison.SelectedItem.ToString();
                 }
 
+                // Convertir le libellé saisi en id de marque (crée pas de nouvelle marque ici)
+                int? marqueId = DBInterface.GetMarqueIdByLibelle(txtMarque.Text.Trim());
+                if (!marqueId.HasValue)
+                    throw new Exception("Marque inconnue : créez-la d'abord dans la table Marque.");
+
                 DBInterface.ModifierMateriel(
                     _dto.Id,
                     txtCode.Text.Trim().ToUpper(),
-                    txtMarque.Text.Trim(),
+                    marqueId.Value,
                     cboEtat.SelectedItem.ToString(),
                     pointure, materiaux, taille, saison);
 

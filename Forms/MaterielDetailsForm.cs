@@ -27,7 +27,7 @@ namespace LyonPalme.Forms
         {
             lblCodeValeur.Text = _dto.Code;
             lblTypeValeur.Text = _dto.TypeMateriel;
-            lblMarqueValeur.Text = _dto.Marque;
+            lblMarqueValeur.Text = DBInterface.GetMarqueLibelle(_dto.Marque);
             lblTailleValeur.Text = _dto.TailleOuPointure ?? "—";
             lblEtatValeur.Text = _dto.Etat;
             lblDispoValeur.Text = _dto.Disponibilite;
@@ -83,7 +83,7 @@ namespace LyonPalme.Forms
             if (u != null)
             {
                 lblCodeValeur.Text = u.Code;
-                lblMarqueValeur.Text = u.Marque;
+                lblMarqueValeur.Text = DBInterface.GetMarqueLibelle(u.Marque);
                 lblEtatValeur.Text = u.Etat;
             }
         }

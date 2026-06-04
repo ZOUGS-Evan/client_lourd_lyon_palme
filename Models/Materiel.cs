@@ -15,7 +15,7 @@ namespace LyonPalme.Models
 
         public int Id { get; private set; }
         public string Code { get; set; }
-        public string Marque { get; set; }
+        public int Marque { get; set; }
         public string Etat { get; set; }
         public string TypeMateriel { get; private set; }
         public string TailleOuPointure { get; set; }

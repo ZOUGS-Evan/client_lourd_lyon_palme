@@ -71,10 +71,14 @@ namespace LyonPalme.Forms
                 if (type == "Monopalme" && int.TryParse(txtPointure.Text.Trim(), out int p))
                     pointure = p;
 
+                int? marqueId = DBInterface.GetMarqueIdByLibelle(txtMarque.Text.Trim());
+                if (!marqueId.HasValue)
+                    throw new Exception("Marque inconnue : créez-la d'abord dans la table Marque.");
+
                 DBInterface.AjouterMateriel(
                     nextId,
                     txtCode.Text.Trim().ToUpper(),
-                    txtMarque.Text.Trim(),
+                    marqueId.Value,
                     cboEtat.SelectedItem.ToString(),
                     type, pointure, materiaux, taille, saison);
 
